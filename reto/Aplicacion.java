@@ -1,13 +1,16 @@
+import java.sql.Connection;
 import java.util.Scanner;
 
 public class Aplicacion{
-	private String url = "jdbc:mysql://127.0.0.1:3306/BibliotecaMuskiz";
-	private String usuario = "alumno1";
-	private String password = "alumno1";
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int opcion;
         Connection conn= null;
+        String url = "jdbc:mysql://127.0.0.1:3306/bibliotecamuskiz";
+	    String usuario = "alumno1";
+	    String password = "alumno1";
+        conn = Io.getConexion(url, usuario, password);
+        Io.sop("Estado de la conexion: " + Io.estadoConexion(conn));
 
         do {
             System.out.println("***************************************************************************************");
@@ -28,8 +31,8 @@ public class Aplicacion{
 
             switch (opcion) {
                 case 1:
-                    
-                    
+                    Io.getConexion(url, usuario, password);
+                    Io.sop("Estado de la conexion: " + Io.estadoConexion(conn));
                 case 2:
         
                     
