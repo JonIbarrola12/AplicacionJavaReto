@@ -6,7 +6,7 @@ public class Aplicacion{
         Scanner scanner = new Scanner(System.in);
         int opcion;
         Connection conn= null;
-        String url = "jdbc:mysql://127.0.0.1:3306/bibliotecamuskiz";
+        String url = "jdbc:mysql://127.0.0.1:3306/BibliotecaMuskiz";
 	    String usuario = "alumno1";
 	    String password = "alumno1";
         conn = Io.getConexion(url, usuario, password);
