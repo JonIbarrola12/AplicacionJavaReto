@@ -5,6 +5,7 @@ public class Aplicacion{
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int opcion;
+        int continuar;
         Connection conn= null;
         String url = "jdbc:mysql://127.0.0.1:3306/BibliotecaMuskiz";
 	    String usuario = "alumno1";
@@ -33,8 +34,10 @@ public class Aplicacion{
                 case 1:
                     Io.getConexion(url, usuario, password);
                     Io.sop("Estado de la conexion: " + Io.estadoConexion(conn));
+                    continuar = scanner.nextInt();
+                    break;
                 case 2:
-        
+                    
                     
                 case 3:
         
