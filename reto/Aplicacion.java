@@ -36,7 +36,7 @@ public class Aplicacion{
                     Io.sop("Estado de la conexion: " + Io.estadoConexion(conn));
                     continuar = scanner.nextInt();
                     break;
-                case 2:
+                case 2://
                     
                     
                 case 3:
