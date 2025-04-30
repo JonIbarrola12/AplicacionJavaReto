@@ -5,7 +5,7 @@ public class Aplicacion{
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int opcion;
-        int continuarr;
+        int continuar;
         Connection conn= null;
         String url = "jdbc:mysql://127.0.0.1:3306/BibliotecaMuskiz";
 	    String usuario = "alumno1";
