@@ -53,7 +53,9 @@ public class Aplicacion{
                     continuar = scanner.nextInt();
                     break;
                 case 6:
-        
+                    Io.buscarPorCodUsuario(conn, scanner);
+                    continuar = scanner.nextInt();
+                    break; 
                     
                 case 7:
         
