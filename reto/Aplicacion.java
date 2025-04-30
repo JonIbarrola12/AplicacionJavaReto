@@ -37,7 +37,8 @@ public class Aplicacion{
                 case 1:
                     Io.getConexion(url, usuario, password);
                     Io.sop("Estado de la conexion: " + Io.estadoConexion(conn));
-                    continuar = scanner.nextInt();
+                    System.out.println("Presiona Enter para continuar...");
+                    scanner.nextLine();
                     break;
                 case 2://
                     
@@ -50,11 +51,13 @@ public class Aplicacion{
                     
                 case 5:
                     Io.cerrarConexion(conn);
-                    continuar = scanner.nextInt();
+                    System.out.println("Presiona Enter para continuar...");
+                    scanner.nextLine();
                     break;
                 case 6:
                     Io.buscarPorCodUsuario(conn, scanner);
-                    continuar = scanner.nextInt();
+                    System.out.println("Presiona Enter para continuar...");
+                    scanner.nextLine();
                     break; 
                     
                 case 7:
@@ -73,12 +76,16 @@ public class Aplicacion{
                     cols += 5;
                     rows += 2;
                     Io.setConsoleSize(cols, rows);
+                    System.out.println("Presiona Enter para continuar...");
+                    scanner.nextLine();
                     break;
 
                 case 12:
                     cols = Math.max(20, cols - 5);
                     rows = Math.max(10, rows - 2);
                     Io.setConsoleSize(cols, rows);
+                    System.out.println("Presiona Enter para continuar...");
+                    scanner.nextLine();
                     break;
         
                     
