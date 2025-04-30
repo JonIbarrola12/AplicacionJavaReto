@@ -32,7 +32,8 @@ public class Aplicacion{
             System.out.print("\nElige una opción: ");
 
             opcion = scanner.nextInt();
-
+            scanner.nextLine();
+            
             switch (opcion) {
                 case 1:
                     Io.getConexion(url, usuario, password);
