@@ -1,7 +1,11 @@
+import java.io.IO;
+import java.io.IOException;
 import java.sql.Connection;
 import java.util.Scanner;
 
 public class Aplicacion{
+    static int cols = 80;
+    static int rows = 25;
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int opcion;
@@ -64,9 +68,16 @@ public class Aplicacion{
         
                     
                 case 11:
-        
-                    
+                    cols += 5;
+                    rows += 2;
+                    Io.setConsoleSize(cols, rows);
+                    break;
+
                 case 12:
+                    cols = Math.max(20, cols - 5);
+                    rows = Math.max(10, rows - 2);
+                    Io.setConsoleSize(cols, rows);
+                    break;
         
                     
                 case 0:
@@ -79,4 +90,6 @@ public class Aplicacion{
 
         scanner.close();
     }
+  
 }
+
