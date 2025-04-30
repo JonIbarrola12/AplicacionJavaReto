@@ -33,4 +33,16 @@ public class Io{
         }
         return dev;
     }
+    public static void cerrarConexion(Connection conn) {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+                sop("Conexion cerrada correctamente.");
+            } else {
+                sop("La conexion ya estaba cerrada.");
+            }
+        } catch (SQLException e) {
+            sop("Error al cerrar la conexion: " + e.getMessage());
+        }
+    }
 }

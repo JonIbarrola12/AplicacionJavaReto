@@ -46,8 +46,9 @@ public class Aplicacion{
         
                     
                 case 5:
-        
-                    
+                    Io.cerrarConexion(conn);
+                    continuar = scanner.nextInt();
+                    break;
                 case 6:
         
                     
