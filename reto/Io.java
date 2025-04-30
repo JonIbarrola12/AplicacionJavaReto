@@ -1,4 +1,3 @@
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -33,17 +32,5 @@ public class Io{
             dev=false;
         }
         return dev;
-    }
-      static void setConsoleSize(int cols, int rows) {
-        String[] cmd = { "cmd", "/c", "mode", "con:", "cols=" + cols, "lines=" + rows };
-        try {
-            Process p = new ProcessBuilder(cmd)
-                            .redirectErrorStream(true)
-                            .inheritIO()
-                            .start();
-            p.waitFor();
-        } catch (IOException | InterruptedException e) {
-            System.err.println("Error al cambiar tamaño del CMD: " + e.getMessage());
-        }
     }
 }
