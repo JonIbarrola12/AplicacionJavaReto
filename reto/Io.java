@@ -20,8 +20,8 @@ public class Io{
             return ("off");
         }
         return ("on");
-        }
-        public static Connection getConexion(String url, String user, String pass){
+    }
+    public static Connection getConexion(String url, String user, String pass){
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url, user, pass);
@@ -124,16 +124,29 @@ public class Io{
         String sql = "INSERT INTO usuarios (cod_usuario, nombre_usuario, contrasena, telefono, direccion, correo_elec, num_ss) VALUES (?, ?, ?, ?, ?, ?, ?)";
         String nombre = Azar.getNombre();
         int codUsuario = (int) (Math.random()*100)+1;
-        //Comprobamos el codigo poara que no se repita ya que es la clave primaria de la tabla usuarios
+        String telefono = Azar.getTelefono();
+        String numSS = Azar.getNumSS();
+        //Comprobamos el codigo para que no se repita ya que es la clave primaria de la tabla usuarios
         while (comprobarCodigo(conn, codUsuario)) {
             codUsuario = (int) (Math.random()*100)+1;
         }
-
+        //Comprobamos el nombre para que no se repita ya que es unn campo unique de la tabla usuarios
+        while(comprobarNombre(conn, nombre)){
+            nombre = Azar.getNombre();
+        }
+        //Comprobamos el telefono para que no se repita ya que es unn campo unique de la tabla usuarios
+        while(comprobarTelefono(conn, Azar.getTelefono())){
+            Azar.getTelefono();
+        }
+        //Comprobamos el numero de la seguridad social para que no se repita ya que es unn campo unique de la tabla usuarios
+        while(comprobarNumSS(conn, Azar.getNumSS())){
+            Azar.getNumSS();
+        }
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, codUsuario);
             stmt.setString(2, nombre);
             stmt.setString(3, "1234");
-            stmt.setString(4, Azar.getTelefono());
+            stmt.setString(4, telefono);
             if (Azar.getRandom()) {
                 stmt.setString(5, Azar.getDireccion());
             }else {
@@ -141,7 +154,7 @@ public class Io{
             }
             stmt.setString(6, nombre + "@gmail.com");
             if(Azar.getRandom()){
-                stmt.setString(7, Azar.getNumSS());
+                stmt.setString(7, numSS);
             }else {
                 stmt.setNull(7, java.sql.Types.VARCHAR);
             }
@@ -168,6 +181,30 @@ public class Io{
         String sql = "SELECT * FROM usuarios WHERE cod_usuario = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, codigo);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        }
+    }
+    public static boolean comprobarNombre(Connection conn, String nombre) throws SQLException {
+        String sql = "SELECT * FROM usuarios WHERE nombre_usuario = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nombre);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        }
+    }
+    public static boolean comprobarTelefono(Connection conn, String telefono) throws SQLException {
+        String sql = "SELECT * FROM usuarios WHERE telefono = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, telefono);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        }
+    }
+    public static boolean comprobarNumSS(Connection conn, String numSS) throws SQLException {
+        String sql = "SELECT * FROM usuarios WHERE num_ss = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, numSS);
             ResultSet rs = stmt.executeQuery();
             return rs.next(); 
         }
