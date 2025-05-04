@@ -3,8 +3,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Io{
@@ -96,6 +98,66 @@ public class Io{
         int mes = cal.get(Calendar.MONTH) + 1;  //Enero es el mes 0
         int anio = cal.get(Calendar.YEAR);
         return (dia +"/" + mes + "/" + anio);
+    }
+    public static void getUsuarios(Connection conn) throws SQLException {
+        String sql = "SELECT * FROM usuarios";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+        
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        for (int i=1; i <= columnCount; i++) {
+            String columnName = rsmd.getColumnName(i);
+            System.out.print(columnName + " ");
+        }
+        System.out.println();
+        while (rs.next()) {
+            for (int i = 1; i <= columnCount; i++) {
+                String columnValue = rs.getString(i);
+                System.out.print( columnValue + " ");
+            }
+            System.out.println();
+        }
+        rs.close();
+        stmt.close();
+    }
+    public static void generarUsuario(Connection conn) throws SQLException {
+        String sql = "INSERT INTO usuarios (cod_usuario, nombre_usuario, contrasena, telefono, direccion, correo_elec, num_ss) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String nombre = Azar.getNombre();
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, (int) (Math.random()*100)+1);
+            stmt.setString(2, nombre);
+            stmt.setString(3, "1234");
+            stmt.setString(4, Azar.getTelefono());
+            if (Azar.getRandom()) {
+                stmt.setString(5, Azar.getDireccion());
+            }else {
+                stmt.setNull(5, java.sql.Types.VARCHAR);
+            }
+            stmt.setString(6, nombre + "@gmail.com");
+            if(Azar.getRandom()){
+                stmt.setString(7, Azar.getNumSS());
+            }else {
+                stmt.setNull(7, java.sql.Types.VARCHAR);
+            }
+            stmt.executeUpdate();
+        }
+        sop(nombre + " se ha generado correctamente.");
+    }
+    public static void eliminarUsuario(Connection conn, Scanner scanner) throws SQLException {
+        getUsuarios(conn);
+        sop("Introduce el codigo del usuario a eliminar:");
+        String codUsuario = scanner.nextLine();
+        String sql = "DELETE FROM usuarios WHERE cod_usuario = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, codUsuario);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                sop("Usuario eliminado correctamente.");
+            } else {
+                sop("No se encontro ningun usuario con ese codigo.");
+            }
+        }
     }
 }
 

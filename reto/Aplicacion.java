@@ -1,5 +1,6 @@
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Aplicacion{
@@ -17,19 +18,19 @@ public class Aplicacion{
         Io.sop("Estado de la conexion: " + Io.estadoConexion(conn));
         Io.clearScreen();
         do {
-            System.out.println("***************************************************************************************");
-            System.out.println("*                                Aplicacion Grupo/Talde 1            "+fechaActual +"         *");
-            System.out.println("***************************************************************************************");
-            System.out.println("\n                               === OPCIONES BASICAS ===                              ");
-            System.out.println("1. Comprobar/Establecer conexion                                2. Generar 1 usuario   ");                                                                                            
-            System.out.println("3. Mostrar usuarios                                             4. Eliminar 1 usuario  ");
-            System.out.println("5. Realizar la desconexion                                      6. Buscar Dni          ");
-            System.out.println("7. Crear Tabla de Usuarios                                      8. Crear 100 Usuarios  ");
-            System.out.println("9. Borrar Tabla Usuarios                                        10. Mostrar Usuarios Paginando");
-            System.out.println("11. Aumentar el tamaño del CMD                                  12. Disminuir el tamaño del CMD");
-            System.out.println("13. Mostrar campos de la Tabla");
-            System.out.println("0. Salir");
-            System.out.print("\nElige una opción: ");
+            Io.sop("***************************************************************************************");
+            Io.sop("*                                Aplicacion Grupo/Talde 1            "+fechaActual +"         *");
+            Io.sop("***************************************************************************************");
+            Io.sop("\n                               === OPCIONES BASICAS ===                              ");
+            Io.sop("1. Comprobar/Establecer conexion                                2. Generar 1 usuario   ");                                                                                            
+            Io.sop("3. Mostrar usuarios                                             4. Eliminar 1 usuario  ");
+            Io.sop("5. Realizar la desconexion                                      6. Buscar Dni          ");
+            Io.sop("7. Crear Tabla de Usuarios                                      8. Crear 100 Usuarios  ");
+            Io.sop("9. Borrar Tabla Usuarios                                        10. Mostrar Usuarios Paginando");
+            Io.sop("11. Aumentar el tamaño del CMD                                  12. Disminuir el tamaño del CMD");
+            Io.sop("13. Mostrar campos de la Tabla");
+            Io.sop("0. Salir");
+            Io.sop("\nElige una opción: ");
 
             opcion = scanner.nextInt();
             scanner.nextLine();
@@ -38,26 +39,44 @@ public class Aplicacion{
                 case 1:
                     Io.getConexion(url, usuario, password);
                     Io.sop("Estado de la conexion: " + Io.estadoConexion(conn));
-                    System.out.println("Presiona Enter para continuar...");
+                    Io.sop("Presiona Enter para continuar...");
                     scanner.nextLine();
                     break;
-                case 2://
-                    
-                    
+                case 2:
+                    try {
+                        Io.generarUsuario(conn);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    Io.sop("Presiona Enter para continuar...");
+                    scanner.nextLine();
+                    break;
                 case 3:
-        
-                    
+                    try {
+                        Io.getUsuarios(conn);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    Io.sop("Presiona Enter para continuar...");
+                    scanner.nextLine();
+                    break;
                 case 4:
-        
-                    
+                    try {
+                        Io.eliminarUsuario(conn, scanner);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    Io.sop("Presiona Enter para continuar...");
+                    scanner.nextLine();
+                    break;
                 case 5:
                     Io.cerrarConexion(conn);
-                    System.out.println("Presiona Enter para continuar...");
+                    Io.sop("Presiona Enter para continuar...");
                     scanner.nextLine();
                     break;
                 case 6:
                     Io.buscarPorCodUsuario(conn, scanner);
-                    System.out.println("Presiona Enter para continuar...");
+                    Io.sop("Presiona Enter para continuar...");
                     scanner.nextLine();
                     break; 
                     
@@ -77,7 +96,7 @@ public class Aplicacion{
                     cols += 5;
                     rows += 2;
                     Io.setConsoleSize(cols, rows);
-                    System.out.println("Presiona Enter para continuar...");
+                    Io.sop("Presiona Enter para continuar...");
                     scanner.nextLine();
                     break;
 
@@ -85,16 +104,16 @@ public class Aplicacion{
                     cols = Math.max(20, cols - 5);
                     rows = Math.max(10, rows - 2);
                     Io.setConsoleSize(cols, rows);
-                    System.out.println("Presiona Enter para continuar...");
+                    Io.sop("Presiona Enter para continuar...");
                     scanner.nextLine();
                     break;
         
                     
                 case 0:
-                    System.out.println("Saliendo del programa... ¡Hasta luego!");
+                Io.sop("Saliendo del programa... ¡Hasta luego!");
                     break;
                 default:
-                    System.out.println("Opción no válida. Intenta de nuevo.");
+                Io.sop("Opción no válida. Intenta de nuevo.");
             }
         } while (opcion != 0);
 
