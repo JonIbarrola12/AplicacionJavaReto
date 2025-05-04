@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Calendar;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Io{
@@ -124,8 +123,14 @@ public class Io{
     public static void generarUsuario(Connection conn) throws SQLException {
         String sql = "INSERT INTO usuarios (cod_usuario, nombre_usuario, contrasena, telefono, direccion, correo_elec, num_ss) VALUES (?, ?, ?, ?, ?, ?, ?)";
         String nombre = Azar.getNombre();
+        int codUsuario = (int) (Math.random()*100)+1;
+        //Comprobamos el codigo poara que no se repita ya que es la clave primaria de la tabla usuarios
+        while (comprobarCodigo(conn, codUsuario)) {
+            codUsuario = (int) (Math.random()*100)+1;
+        }
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, (int) (Math.random()*100)+1);
+            stmt.setInt(1, codUsuario);
             stmt.setString(2, nombre);
             stmt.setString(3, "1234");
             stmt.setString(4, Azar.getTelefono());
@@ -157,6 +162,14 @@ public class Io{
             } else {
                 sop("No se encontro ningun usuario con ese codigo.");
             }
+        }
+    }
+    public static boolean comprobarCodigo(Connection conn, int codigo) throws SQLException {
+        String sql = "SELECT * FROM usuarios WHERE cod_usuario = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codigo);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
         }
     }
 }
