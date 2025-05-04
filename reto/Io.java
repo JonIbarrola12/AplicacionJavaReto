@@ -4,6 +4,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Scanner;
 
 public class Io{
@@ -89,7 +90,13 @@ public class Io{
             e.printStackTrace();
         }
     }
-    
+    public static String fechaActual(){
+        Calendar cal = Calendar.getInstance();
+        int dia = cal.get(Calendar.DAY_OF_MONTH);
+        int mes = cal.get(Calendar.MONTH) + 1;  //Enero es el mes 0
+        int anio = cal.get(Calendar.YEAR);
+        return (dia +"/" + mes + "/" + anio);
+    }
 }
 
 

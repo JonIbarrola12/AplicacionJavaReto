@@ -8,7 +8,7 @@ public class Aplicacion{
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int opcion;
-        int continuar;
+        String fechaActual= Io.fechaActual();
         Connection conn= null;
         String url = "jdbc:mysql://127.0.0.1:3306/BibliotecaMuskiz";
 	    String usuario = "alumno1";
@@ -18,7 +18,7 @@ public class Aplicacion{
         Io.clearScreen();
         do {
             System.out.println("***************************************************************************************");
-            System.out.println("*                                Aplicacion Grupo/Talde 1                             *");
+            System.out.println("*                                Aplicacion Grupo/Talde 1            "+fechaActual +"         *");
             System.out.println("***************************************************************************************");
             System.out.println("\n                               === OPCIONES BASICAS ===                              ");
             System.out.println("1. Comprobar/Establecer conexion                                2. Generar 1 usuario   ");                                                                                            
