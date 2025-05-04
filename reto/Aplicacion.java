@@ -15,7 +15,7 @@ public class Aplicacion{
 	    String password = "alumno1";
         conn = Io.getConexion(url, usuario, password);
         Io.sop("Estado de la conexion: " + Io.estadoConexion(conn));
-
+        Io.clearScreen();
         do {
             System.out.println("***************************************************************************************");
             System.out.println("*                                Aplicacion Grupo/Talde 1                             *");
