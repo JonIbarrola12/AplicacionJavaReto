@@ -79,16 +79,18 @@ public class Aplicacion{
                     Io.sop("Presiona Enter para continuar...");
                     scanner.nextLine();
                     break; 
-                    
                 case 7:
-        
-                    
+                    Io.crearTablaUsuarios(conn);
+                    scanner.nextInt();
+                    break;
                 case 8:
-        
-                    
+                    Io.crearCienUsuarios(conn);
+                    scanner.nextInt();
+                    break;   
                 case 9:
-        
-                    
+                    Io.borrarTablaUsuarios(conn);
+                    scanner.nextInt();
+                    break;          
                 case 10:
         
                     

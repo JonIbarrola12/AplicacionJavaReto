@@ -7,6 +7,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Scanner;
+import java.sql.Statement;
 
 public class Io{
 	public static void sop(String mensaje) {
@@ -206,6 +207,68 @@ public class Io{
             return rs.next(); 
         }
     }
+    public static void crearTablaUsuarios(Connection conn) {
+        try {
+            String sql = "CREATE TABLE usuarios (" +
+                         "cod_usuario VARCHAR(20) PRIMARY KEY, " +
+                         "nombre_usuario VARCHAR(100), " +
+                         "contrasena VARCHAR(100), " +
+                         "telefono VARCHAR(20), " +
+                         "direccion VARCHAR(255), " +
+                         "correo_elec VARCHAR(100), " +
+                         "num_ss VARCHAR(20))";
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+            stmt.close();
+            sop("Tabla 'usuarios' creada correctamente.");
+        } catch (SQLException e) {
+            sop("Error al crear la tabla: " + e.getMessage());
+        }
+    }
+
+    public static void crearCienUsuarios(Connection conn) {
+        try {
+            Statement stmtMax = conn.createStatement();
+            ResultSet rs = stmtMax.executeQuery("SELECT MAX(cod_usuario) FROM usuarios");
+            int start = 1;
+            if (rs.next()) {
+                start = rs.getInt(1) + 1;
+            }
+            rs.close();
+            stmtMax.close();
+    
+            String sql = "INSERT INTO usuarios (cod_usuario, nombre_usuario, contrasena, telefono, direccion, correo_elec, num_ss) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+    
+            for (int i = start; i < start + 100; i++) {
+                stmt.setInt(1, i);
+                stmt.setString(2, "Usuario" + i);
+                stmt.setString(3, "BibliotecaMuskiz" + i);
+                stmt.setNull(4, java.sql.Types.VARCHAR);
+                stmt.setNull(5, java.sql.Types.VARCHAR);
+                stmt.setString(6, "usuario" + i + "@bibliotecamuskiz.eus");
+                stmt.setNull(7, java.sql.Types.VARCHAR);
+                stmt.executeUpdate();
+            }
+    
+            stmt.close();
+            sop("100 usuarios creados.");
+        } catch (SQLException e) {
+            sop("Error al crear los usuarios: " + e.getMessage());
+        }
+    }
+    public static void borrarTablaUsuarios(Connection conn) {
+        try {
+            String sql = "DROP TABLE IF EXISTS usuarios";
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(sql);
+            stmt.close();
+            sop("Tabla 'usuarios' eliminada correctamente.");
+        } catch (SQLException e) {
+            sop("Error al eliminar la tabla: " + e.getMessage());
+        }
+    }
+    
 }
 
 
