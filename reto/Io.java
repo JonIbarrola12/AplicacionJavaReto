@@ -260,21 +260,6 @@ public class Io{
         String direccion = scanner.nextLine();
         return direccion;
     }
-    public static void eliminarUsuario(Connection conn, Scanner scanner) throws SQLException {
-        getUsuarios(conn);
-        sop("Introduce el codigo del usuario a eliminar:");
-        String codUsuario = scanner.nextLine();
-        String sql = "DELETE FROM usuarios WHERE cod_usuario = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, codUsuario);
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                sop("Usuario eliminado correctamente.");
-            } else {
-                sop("No se encontro ningun usuario con ese codigo.");
-            }
-        }
-    }
     public static String generarCorreoManual(Connection conn,Scanner scanner)throws SQLException {
         sop("Introduce el correo electronico del usuario:");
         String correo = scanner.nextLine();
@@ -292,6 +277,21 @@ public class Io{
             numSS = scanner.nextLine();
         }
         return numSS;
+    }
+    public static void eliminarUsuario(Connection conn, Scanner scanner) throws SQLException {
+        getUsuarios(conn);
+        sop("Introduce el codigo del usuario a eliminar:");
+        String codUsuario = scanner.nextLine();
+        String sql = "DELETE FROM usuarios WHERE cod_usuario = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, codUsuario);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                sop("Usuario eliminado correctamente.");
+            } else {
+                sop("No se encontro ningun usuario con ese codigo.");
+            }
+        }
     }
     public static boolean comprobarCodigo(Connection conn, int codigo) throws SQLException {
         String sql = "SELECT * FROM usuarios WHERE cod_usuario = ?";
