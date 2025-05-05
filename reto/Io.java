@@ -106,18 +106,20 @@ public class Io{
         String sql = "SELECT * FROM usuarios";
         PreparedStatement stmt = conn.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
+
+        int[] columnWidths = {15, 20, 15, 15, 25, 30, 15};
         
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
         for (int i=1; i <= columnCount; i++) {
             String columnName = rsmd.getColumnName(i);
-            System.out.print(columnName + " ");
+            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
         }
         System.out.println();
         while (rs.next()) {
             for (int i = 1; i <= columnCount; i++) {
                 String columnValue = rs.getString(i);
-                System.out.print( columnValue + " ");
+                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
             }
             System.out.println();
         }
@@ -140,11 +142,11 @@ public class Io{
         }
         //Comprobamos el telefono para que no se repita ya que es unn campo unique de la tabla usuarios
         while(comprobarTelefono(conn, Azar.getTelefono())){
-            Azar.getTelefono();
+            telefono = Azar.getTelefono();
         }
         //Comprobamos el numero de la seguridad social para que no se repita ya que es unn campo unique de la tabla usuarios
         while(comprobarNumSS(conn, Azar.getNumSS())){
-            Azar.getNumSS();
+            numSS = Azar.getNumSS();
         }
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, codUsuario);
@@ -290,6 +292,11 @@ public class Io{
         } catch (SQLException e) {
             sop("Error al obtener los campos de la tabla: " + e.getMessage());
         }
+    }
+    public static void continuar(Scanner scanner) {
+        Io.sop("Presiona Enter para continuar...");
+        scanner.nextLine();
+        Io.clearScreen();
     }
     
 }
