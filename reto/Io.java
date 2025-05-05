@@ -273,6 +273,24 @@ public class Io{
             sop("Error al eliminar las tabla: " + e.getMessage());
         }
     }
+    public static void mostrarCamposTablaUsuarios(Connection conn) {
+        try {
+            String sql = "SELECT * FROM usuarios LIMIT 1";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+    
+            for (int i = 1; i <= columnCount; i++) {
+                sop(rsmd.getColumnName(i) + " (" + rsmd.getColumnTypeName(i) + ")");
+            }
+    
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            sop("Error al obtener los campos de la tabla: " + e.getMessage());
+        }
+    }
     
 }
 
