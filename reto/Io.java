@@ -179,8 +179,49 @@ public class Io{
         }
         sop(nombre + " se ha generado correctamente.");
     }
-    public static void generarUsuarioManual(Connection conn, Scanner scanner) throws SQLException { 
-        
+    public static void generarUsuarioManual(Connection conn, Scanner scanner) throws SQLException {
+        String direccion="", numSS=""; 
+        sop("Quieres generar un usario o un trabajador? (u/t)");
+        String opcion = scanner.nextLine();
+
+        int codUsuario = Io.generarCodigoManual(conn, scanner);
+
+        String nombre = Io.generarNombreManual(conn, scanner);
+
+        String contrasena = Io.generarContrasenaManual(scanner);
+
+        String telefono = Io.generarTelefonoManual(conn, scanner);
+
+        sop("Quieres introducir una direccion? (s/n)");
+        String respuesta = scanner.nextLine();
+        if(respuesta.equalsIgnoreCase("s")) { 
+            direccion = Io.generarDireccionManual(scanner);
+        }
+
+        String correo = Io.generarCorreoManual(conn, scanner);
+        if (opcion.equalsIgnoreCase("t")) {
+            numSS= Io.generarNumSSManual(conn, scanner);
+        }
+        String sql = "INSERT INTO usuarios (cod_usuario, nombre_usuario, contrasena, telefono, direccion, correo_elec, num_ss) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codUsuario);
+            stmt.setString(2, nombre);
+            stmt.setString(3, contrasena);
+            stmt.setString(4, telefono);
+            if (respuesta.equalsIgnoreCase("s")) {
+                stmt.setString(5, direccion);
+            }
+            stmt.setNull(5, java.sql.Types.VARCHAR);
+            stmt.setString(6, correo);
+            if (opcion.equalsIgnoreCase("t")) {
+                stmt.setString(7, numSS);
+            }
+            stmt.setNull(7, java.sql.Types.VARCHAR);
+            stmt.executeUpdate();
+            sop("Usuario " + nombre + " generado correctamente.");
+        }
+    }
+    public static int generarCodigoManual(Connection conn, Scanner scanner) throws SQLException {
         sop("Introduce el codigo del usuario:");
         int codUsuario = scanner.nextInt();
         scanner.nextLine(); 
@@ -189,52 +230,35 @@ public class Io{
             codUsuario = scanner.nextInt();
             scanner.nextLine();
         } 
-
+        return codUsuario;
+    }
+    public static String generarNombreManual(Connection conn,Scanner scanner) throws SQLException {
         sop("Introduce el nombre del usuario:");
         String nombre = scanner.nextLine();
         while (comprobarNombre(conn, nombre)) {
             sop("El nombre ya existe. Introduce otro nombre:");
             nombre = scanner.nextLine();
         }
-
+        return nombre;
+    }
+    public static String generarContrasenaManual(Scanner scanner) {
         sop("Introduce la contraseña del usuario:");
         String contrasena = scanner.nextLine();
+        return contrasena;
+    }
+    public static String generarTelefonoManual(Connection conn, Scanner scanner) throws SQLException {
         sop("Introduce el telefono del usuario:");
         String telefono = scanner.nextLine();
         while (comprobarTelefono(conn, telefono)) {
             sop("El telefono ya existe. Introduce otro telefono:");
             telefono = scanner.nextLine();
         }
-
+        return telefono;
+    }
+    public static String generarDireccionManual(Scanner scanner) {
         sop("Introduce la direccion del usuario:");
         String direccion = scanner.nextLine();
-
-        sop("Introduce el correo electronico del usuario:");
-        String correo = scanner.nextLine();
-        while (comprobarCorreo(conn, correo)) {
-            sop("El correo electronico ya existe. Introduce otro correo:");
-            correo = scanner.nextLine();
-        }
-
-        sop("Introduce el numero de la seguridad social del usuario:");
-        String numSS = scanner.nextLine();
-        while (comprobarNumSS(conn, numSS)) {
-            sop("El numero de la seguridad social ya existe. Introduce otro numero:");
-            numSS = scanner.nextLine();
-        }
-
-        String sql = "INSERT INTO usuarios (cod_usuario, nombre_usuario, contrasena, telefono, direccion, correo_elec, num_ss) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, codUsuario);
-            stmt.setString(2, nombre);
-            stmt.setString(3, contrasena);
-            stmt.setString(4, telefono);
-            stmt.setString(5, direccion);
-            stmt.setString(6, correo);
-            stmt.setString(7, numSS);
-            stmt.executeUpdate();
-            sop("Usuario " + nombre + " generado correctamente.");
-        }
+        return direccion;
     }
     public static void eliminarUsuario(Connection conn, Scanner scanner) throws SQLException {
         getUsuarios(conn);
@@ -250,6 +274,24 @@ public class Io{
                 sop("No se encontro ningun usuario con ese codigo.");
             }
         }
+    }
+    public static String generarCorreoManual(Connection conn,Scanner scanner)throws SQLException {
+        sop("Introduce el correo electronico del usuario:");
+        String correo = scanner.nextLine();
+        while (comprobarCorreo(conn, correo)) {
+            sop("El correo electronico ya existe. Introduce otro correo:");
+            correo = scanner.nextLine();
+        }
+        return correo;
+    }
+    public static String generarNumSSManual(Connection conn, Scanner scanner) throws SQLException {
+        sop("Introduce el numero de la seguridad social del usuario:");
+        String numSS = scanner.nextLine();
+        while (comprobarNumSS(conn, numSS)) {
+            sop("El numero de la seguridad social ya existe. Introduce otro numero:");
+            numSS = scanner.nextLine();
+        }
+        return numSS;
     }
     public static boolean comprobarCodigo(Connection conn, int codigo) throws SQLException {
         String sql = "SELECT * FROM usuarios WHERE cod_usuario = ?";
