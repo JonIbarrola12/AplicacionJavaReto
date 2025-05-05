@@ -5,9 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Scanner;
-import java.sql.Statement;
 
 public class Io{
 	public static void sop(String mensaje) {
@@ -41,11 +41,19 @@ public class Io{
     }
     public static void setConsoleSize(int cols, int rows) {
         try {
+            // Limitar valores mínimos
+            cols = Math.max(cols, 20);
+            rows = Math.max(rows, 10);
+    
             String command = "cmd /c mode con: cols=" + cols + " lines=" + rows;
             Process process = Runtime.getRuntime().exec(command);
-            process.waitFor();
+            int exitCode = process.waitFor(); // Espera a que termine
+            
+            if (exitCode != 0) {
+                System.out.println("Error: No se pudo cambiar el tamaño (Código " + exitCode + ")");
+            }
         } catch (IOException | InterruptedException e) {
-            System.out.println("Error al cambiar el tamaño de la consola: " + e.getMessage());
+            System.out.println("Error al cambiar el tamaño: " + e.getMessage());
         }
     }
     public static void buscarPorCodUsuario(Connection conn, Scanner scanner) {

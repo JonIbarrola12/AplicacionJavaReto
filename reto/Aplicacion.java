@@ -4,8 +4,8 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Aplicacion{
-    static int cols = 80;
-    static int rows = 25;
+    static int cols = 100;
+    static int rows = 30;
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int opcion;
@@ -95,20 +95,18 @@ public class Aplicacion{
         
                     
                 case 11:
-    // Aumentar tamaño del CMD
-    Aplicacion.cols += 10;
-    Aplicacion.rows += 5;
+                // Aumentar tamaño
+    Aplicacion.cols += 20;
+    Aplicacion.rows += 10;
     Io.setConsoleSize(Aplicacion.cols, Aplicacion.rows);
-    Io.sop("Presiona Enter para continuar...");
-    scanner.nextLine();
+    Io.sop("Tamaño aumentado a " + Aplicacion.cols + "x" + Aplicacion.rows);
     break;
 case 12:
-    // Disminuir tamaño del CMD
-    Aplicacion.cols -= 10;
-    Aplicacion.rows -= 5;
+    // Disminuir tamaño
+    Aplicacion.cols -= 20;
+    Aplicacion.rows -= 10;
     Io.setConsoleSize(Aplicacion.cols, Aplicacion.rows);
-    Io.sop("Presiona Enter para continuar...");
-    scanner.nextLine();
+    Io.sop("Tamaño reducido a " + Aplicacion.cols + "x" + Aplicacion.rows);
     break;
                     
                 case 0:
