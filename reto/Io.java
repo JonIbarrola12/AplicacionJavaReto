@@ -208,7 +208,7 @@ public class Io{
     public static void crearTablaUsuarios(Connection conn) {
         try {
             String sql = "CREATE TABLE usuarios (" +
-                         "cod_usuario VARCHAR(20) PRIMARY KEY, " +
+                         "cod_usuario INT PRIMARY KEY, " +
                          "nombre_usuario VARCHAR(100), " +
                          "contrasena VARCHAR(100), " +
                          "telefono VARCHAR(20), " +
@@ -255,13 +255,14 @@ public class Io{
     }
     public static void borrarTablaUsuarios(Connection conn) {
         try {
-            String sql = "DROP TABLE IF EXISTS usuarios";
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate(sql);
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+            stmt.executeUpdate("DROP TABLE IF EXISTS usuarios");
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
             stmt.close();
-            sop("Tabla 'usuarios' eliminada correctamente.");
+            sop("Tabla eliminada correctamente");
         } catch (SQLException e) {
-            sop("Error al eliminar la tabla: " + e.getMessage());
+            sop("Error al eliminar las tabla: " + e.getMessage());
         }
     }
     
