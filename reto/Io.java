@@ -31,14 +31,13 @@ public class Io{
         }
         return (conn);
     }
-    public static boolean cerrarConexion(Connection conn){
-        boolean dev=true;
+    public static void cerrarConexion(Connection conn){
         try {
                 conn.close();
+                sop("exitosa");
         } catch (SQLException e) {
-            dev=false;
+            sop("error al cerrar la conexion");
         }
-        return dev;
     }
     public static void setConsoleSize(int cols, int rows) {
         try {

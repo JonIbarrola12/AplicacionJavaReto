@@ -37,7 +37,7 @@ public class Aplicacion{
             
             switch (opcion) {
                 case 1:
-                    Io.getConexion(url, usuario, password);
+                    conn=Io.getConexion(url, usuario, password);
                     Io.sop("Estado de la conexion: " + Io.estadoConexion(conn));
                     Io.sop("Presiona Enter para continuar...");
                     scanner.nextLine();
