@@ -50,7 +50,6 @@ public class Io{
     }
     public static void buscarPorCodUsuario(Connection conn, Scanner scanner) {
         System.out.print("Introduce el codigo del usuario:");
-        scanner.nextLine();
         String codUsuario = scanner.nextLine();
 
         try {
