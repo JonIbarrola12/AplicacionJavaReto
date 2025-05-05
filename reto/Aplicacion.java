@@ -96,18 +96,18 @@ public class Aplicacion{
                     
                 case 11:
                 // Aumentar tamaño
-    Aplicacion.cols += 20;
-    Aplicacion.rows += 10;
-    Io.setConsoleSize(Aplicacion.cols, Aplicacion.rows);
-    Io.sop("Tamaño aumentado a " + Aplicacion.cols + "x" + Aplicacion.rows);
-    break;
-case 12:
-    // Disminuir tamaño
-    Aplicacion.cols -= 20;
-    Aplicacion.rows -= 10;
-    Io.setConsoleSize(Aplicacion.cols, Aplicacion.rows);
-    Io.sop("Tamaño reducido a " + Aplicacion.cols + "x" + Aplicacion.rows);
-    break;
+                     Aplicacion.cols += 20;
+                     Aplicacion.rows += 10;
+                    Io.setConsoleSize(Aplicacion.cols, Aplicacion.rows);
+                    Io.sop("Tamaño aumentado a " + Aplicacion.cols + "x" + Aplicacion.rows);
+                 break;
+        case 12:
+            // Disminuir tamaño
+            Aplicacion.cols -= 20;
+            Aplicacion.rows -= 10;
+            Io.setConsoleSize(Aplicacion.cols, Aplicacion.rows);
+            Io.sop("Tamaño reducido a " + Aplicacion.cols + "x" + Aplicacion.rows);
+                 break;
                     
                 case 0:
                 Io.sop("Saliendo del programa... ¡Hasta luego!");
