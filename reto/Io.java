@@ -40,15 +40,12 @@ public class Io{
         return dev;
     }
     public static void setConsoleSize(int cols, int rows) {
-        String[] cmd = { "cmd", "/c", "mode", "con:", "cols=" + cols, "lines=" + rows };
         try {
-            Process p = new ProcessBuilder(cmd)
-                            .redirectErrorStream(true)
-                            .inheritIO()
-                            .start();
-            p.waitFor();
+            String command = "cmd /c mode con: cols=" + cols + " lines=" + rows;
+            Process process = Runtime.getRuntime().exec(command);
+            process.waitFor();
         } catch (IOException | InterruptedException e) {
-            System.err.println("Error al cambiar tamaño del CMD: " + e.getMessage());
+            System.out.println("Error al cambiar el tamaño de la consola: " + e.getMessage());
         }
     }
     public static void buscarPorCodUsuario(Connection conn, Scanner scanner) {

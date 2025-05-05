@@ -93,20 +93,28 @@ public class Aplicacion{
         
                     
                 case 11:
-                    cols += 5;
-                    rows += 2;
-                    Io.setConsoleSize(cols, rows);
-                    Io.sop("Presiona Enter para continuar...");
-                    scanner.nextLine();
-                    break;
-
-                case 12:
-                    cols = Math.max(20, cols - 5);
-                    rows = Math.max(10, rows - 2);
-                    Io.setConsoleSize(cols, rows);
-                    Io.sop("Presiona Enter para continuar...");
-                    scanner.nextLine();
-                    break;
+                System.out.println("Maximizando la ventana de la consola...");
+                try {
+                    Runtime.getRuntime().exec("powershell -Command \"Add-Type -AssemblyName Microsoft.VisualBasic; [Microsoft.VisualBasic.Interaction]::AppActivate((Get-Process -Name cmd).MainWindowHandle); [Microsoft.VisualBasic.Interaction]::Shell(\"nircmd.exe win max all\", \"run\")\"");
+                } catch (Exception e) {
+                    System.out.println("Error al maximizar la ventana de la consola: " + e.getMessage());
+                }
+                System.out.println("Código ejecutado correctamente");
+                Io.sop("Presiona Enter para continuar...");
+                scanner.nextLine();
+                break;
+            
+            case 12:
+                System.out.println("Minimizando la ventana de la consola...");
+                try {
+                    Runtime.getRuntime().exec("powershell -Command \"Add-Type -AssemblyName Microsoft.VisualBasic; [Microsoft.VisualBasic.Interaction]::AppActivate((Get-Process -Name cmd).MainWindowHandle); [Microsoft.VisualBasic.Interaction]::Shell(\"nircmd.exe win min all\", \"run\")\"");
+                } catch (Exception e) {
+                    System.out.println("Error al minimizar la ventana de la consola: " + e.getMessage());
+                }
+                System.out.println("Código ejecutado correctamente");
+                Io.sop("Presiona Enter para continuar...");
+                scanner.nextLine();
+                break;
         
                     
                 case 0:
