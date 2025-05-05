@@ -126,7 +126,18 @@ public class Io{
         rs.close();
         stmt.close();
     }
-    public static void generarUsuario(Connection conn) throws SQLException {
+    public static void generarUsuario(Connection conn, Scanner scanner) throws SQLException {
+        sop("Quieres generar un usuario automaticamente o manualmente? (a/m)");
+        String opcion = scanner.nextLine();
+        if (opcion.equalsIgnoreCase("a")) {
+            generarUsuarioAutomaticamente(conn);
+        } else if (opcion.equalsIgnoreCase("m")) {
+            generarUsuarioManual(conn, scanner);
+        } else {
+            sop("Opcion no valida.");
+        }
+    }
+    public static void generarUsuarioAutomaticamente(Connection conn) throws SQLException {
         String sql = "INSERT INTO usuarios (cod_usuario, nombre_usuario, contrasena, telefono, direccion, correo_elec, num_ss) VALUES (?, ?, ?, ?, ?, ?, ?)";
         String nombre = Azar.getNombre();
         int codUsuario = (int) (Math.random()*100)+1;
@@ -167,6 +178,63 @@ public class Io{
             stmt.executeUpdate();
         }
         sop(nombre + " se ha generado correctamente.");
+    }
+    public static void generarUsuarioManual(Connection conn, Scanner scanner) throws SQLException { 
+        
+        sop("Introduce el codigo del usuario:");
+        int codUsuario = scanner.nextInt();
+        scanner.nextLine(); 
+        while (comprobarCodigo(conn, codUsuario)) {
+            sop("El codigo ya existe. Introduce otro codigo:");
+            codUsuario = scanner.nextInt();
+            scanner.nextLine();
+        } 
+
+        sop("Introduce el nombre del usuario:");
+        String nombre = scanner.nextLine();
+        while (comprobarNombre(conn, nombre)) {
+            sop("El nombre ya existe. Introduce otro nombre:");
+            nombre = scanner.nextLine();
+        }
+
+        sop("Introduce la contraseña del usuario:");
+        String contrasena = scanner.nextLine();
+        sop("Introduce el telefono del usuario:");
+        String telefono = scanner.nextLine();
+        while (comprobarTelefono(conn, telefono)) {
+            sop("El telefono ya existe. Introduce otro telefono:");
+            telefono = scanner.nextLine();
+        }
+
+        sop("Introduce la direccion del usuario:");
+        String direccion = scanner.nextLine();
+
+        sop("Introduce el correo electronico del usuario:");
+        String correo = scanner.nextLine();
+        while (comprobarCorreo(conn, correo)) {
+            sop("El correo electronico ya existe. Introduce otro correo:");
+            correo = scanner.nextLine();
+        }
+
+        sop("Introduce el numero de la seguridad social del usuario:");
+        String numSS = scanner.nextLine();
+        while (comprobarNumSS(conn, numSS)) {
+            sop("El numero de la seguridad social ya existe. Introduce otro numero:");
+            numSS = scanner.nextLine();
+        }
+
+        String sql = "INSERT INTO usuarios (cod_usuario, nombre_usuario, contrasena, telefono, direccion, correo_elec, num_ss) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codUsuario);
+            stmt.setString(2, nombre);
+            stmt.setString(3, contrasena);
+            stmt.setString(4, telefono);
+            stmt.setString(5, direccion);
+            stmt.setString(6, correo);
+            stmt.setString(7, numSS);
+            stmt.executeUpdate();
+            sop("Usuario " + nombre + " generado correctamente.");
+        }
     }
     public static void eliminarUsuario(Connection conn, Scanner scanner) throws SQLException {
         getUsuarios(conn);
@@ -213,6 +281,14 @@ public class Io{
             stmt.setString(1, numSS);
             ResultSet rs = stmt.executeQuery();
             return rs.next(); 
+        }
+    }
+    public static boolean comprobarCorreo(Connection conn, String correo) throws SQLException {
+        String sql = "SELECT * FROM usuarios WHERE correo_elec = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, correo);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
         }
     }
     public static void crearTablaUsuarios(Connection conn) {
