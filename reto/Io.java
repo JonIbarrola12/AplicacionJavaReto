@@ -228,29 +228,27 @@ public class Io{
 
     public static void crearCienUsuarios(Connection conn) {
         try {
-            Statement stmtMax = conn.createStatement();
-            ResultSet rs = stmtMax.executeQuery("SELECT MAX(cod_usuario) FROM usuarios");
-            int start = 1;
-            if (rs.next()) {
-                start = rs.getInt(1) + 1;
-            }
-            rs.close();
-            stmtMax.close();
-    
             String sql = "INSERT INTO usuarios (cod_usuario, nombre_usuario, contrasena, telefono, direccion, correo_elec, num_ss) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
-    
-            for (int i = start; i < start + 100; i++) {
-                stmt.setInt(1, i);
-                stmt.setString(2, "Usuario" + i);
-                stmt.setString(3, "BibliotecaMuskiz" + i);
+
+            for (int i = 0; i < 100; i++) {
+                int codigo = (int) (Math.random()*1000);
+                while (comprobarCodigo(conn, codigo)) {
+                    codigo = (int) (Math.random()*1000)+1;
+                }
+
+                stmt.setInt(1, codigo);
+                stmt.setString(2, "Usuario" + codigo);
+                stmt.setString(3, "BibliotecaMuskiz" + codigo);
                 stmt.setNull(4, java.sql.Types.VARCHAR);
-                stmt.setNull(5, java.sql.Types.VARCHAR);
-                stmt.setString(6, "usuario" + i + "@bibliotecamuskiz.eus");
+                stmt.setString(5, "");
+                stmt.setString(6, "usuario" + codigo + "@bibliotecamuskiz.eus");
                 stmt.setNull(7, java.sql.Types.VARCHAR);
                 stmt.executeUpdate();
+
+
             }
-    
+           
             stmt.close();
             sop("100 usuarios creados.");
         } catch (SQLException e) {
