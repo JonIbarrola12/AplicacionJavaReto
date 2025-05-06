@@ -201,6 +201,31 @@ public class Io{
         rs.close();
         stmt.close();
     }
+    public static void mostrarPrestamosByCodUsuario(Connection conn, String codUsuario) throws SQLException {
+        String sql = "SELECT * FROM prestamos WHERE cod_usuario = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, codUsuario);
+        ResultSet rs = stmt.executeQuery();
+
+        int[] columnWidths = {15, 20, 20, 20, 15};
+        
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        for (int i=1; i <= columnCount; i++) {
+            String columnName = rsmd.getColumnName(i);
+            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
+        }
+        System.out.println();
+        while (rs.next()) {
+            for (int i = 1; i <= columnCount; i++) {
+                String columnValue = rs.getString(i);
+                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
+            }
+            System.out.println();
+        }
+        rs.close();
+        stmt.close();
+    }
     public static void generarUsuario(Connection conn, Scanner scanner) throws SQLException {
         sop("Quieres generar un usuario automaticamente o manualmente? (a/m)");
         String opcion = scanner.nextLine();
@@ -723,6 +748,50 @@ public class Io{
             sop("Estado del ejemplar actualizado");
         } catch (SQLException e) {
             sop("Error al actualizar el estado del ejemplar: " + e.getMessage());
+        }
+    }
+    public static void devolverPrestamo(Connection conn, Scanner scanner) throws SQLException {
+        sop("Introduce el nombre de usuario:");
+        String nombre = scanner.nextLine();
+        String codUsuario = getCodUsuarioByNombre(conn, scanner, nombre);
+        if (codUsuario.isEmpty()) {
+            sop("No se encontro ningun usuario con ese nombre.");
+            return;
+        }
+        mostrarPrestamosByCodUsuario(conn, codUsuario);
+        sop("Introduce el codigo del prestamo:");
+        int codPrestamo = scanner.nextInt();
+        scanner.nextLine();
+        while (!comprobarPrestamo(conn, codPrestamo, codUsuario)){
+            sop("El prestamo no existe. Introduce otro codigo:");
+            codPrestamo = scanner.nextInt();
+            scanner.nextLine();
+        }
+        LocalDate hoy = LocalDate.now();
+        Date fechaDevolucion = Date.valueOf(hoy);
+        actualizarPrestamo(conn, codPrestamo, codUsuario, fechaDevolucion);
+        
+    }
+    public static boolean comprobarPrestamo(Connection conn, int codPrestamo, String codUsuario) throws SQLException {
+        String sql = "SELECT * FROM prestamos WHERE cod_prest = ? AND cod_usuario = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codPrestamo);
+            stmt.setString(2, codUsuario);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        }
+    }
+    public static void actualizarPrestamo(Connection conn, int codPrestamo, String codUsuario, Date fechaDevolucion) throws SQLException {
+        String sql = "UPDATE prestamos SET fecha_devolucion = ? WHERE cod_prest = ? AND cod_usuario = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, fechaDevolucion);
+            stmt.setInt(2, codPrestamo);
+            stmt.setString(3, codUsuario);
+            stmt.executeUpdate();
+            stmt.close();
+            sop("Prestamo actualizado correctamente.");
+        } catch (SQLException e) {
+            sop("Error al devolver el prestamo: " + e.getMessage());
         }
     }
 }

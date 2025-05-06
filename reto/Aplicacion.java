@@ -24,7 +24,7 @@ public class Aplicacion{
             Io.sop("1. Comprobar/Establecer conexion                                2. Generar 1 usuario   ");                                                                                            
             Io.sop("3. Mostrar usuarios                                             4. Eliminar 1 usuario  ");
             Io.sop("5. Realizar la desconexion                                      6. Buscar Dni          ");
-            Io.sop("7. Gestionar Tablas (Crear/Borrar)                              8. Crear 100 Usuarios  ");
+            Io.sop("7. Gestionar Tablas (Crear/Borrar)                              8. Devolver Prestamo    ");
             Io.sop("9. Hacer Prestamo                                               10. Mostrar Usuarios Paginando");
             Io.sop("11. Aumentar el tamaño del CMD                                  12. Disminuir el tamaño del CMD");
             Io.sop("13. Mostrar campos de la Tabla");
@@ -77,7 +77,11 @@ public class Aplicacion{
                     Io.continuar(scanner);
                     break;
                 case 8:
-                    Io.crearCienUsuarios(conn);
+                    try {
+                        Io.devolverPrestamo(conn, scanner);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     Io.continuar(scanner);
                     break;
                 case 9:
