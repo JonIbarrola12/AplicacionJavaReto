@@ -1,11 +1,13 @@
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Scanner;
 
@@ -102,12 +104,85 @@ public class Io{
         int anio = cal.get(Calendar.YEAR);
         return (dia +"/" + mes + "/" + anio);
     }
-    public static void getUsuarios(Connection conn) throws SQLException {
+    public static void mostrarUsuarios(Connection conn) throws SQLException {
         String sql = "SELECT * FROM usuarios";
         PreparedStatement stmt = conn.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
 
         int[] columnWidths = {15, 20, 15, 15, 25, 30, 15};
+        
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        for (int i=1; i <= columnCount; i++) {
+            String columnName = rsmd.getColumnName(i);
+            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
+        }
+        System.out.println();
+        while (rs.next()) {
+            for (int i = 1; i <= columnCount; i++) {
+                String columnValue = rs.getString(i);
+                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
+            }
+            System.out.println();
+        }
+        rs.close();
+        stmt.close();
+    }
+    public static void mostrarLibros(Connection conn) throws SQLException {
+        String sql = "SELECT isbn,titulo,paginas FROM libros";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+
+        int[] columnWidths = {20, 50, 20};
+        
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        for (int i=1; i <= columnCount; i++) {
+            String columnName = rsmd.getColumnName(i);
+            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
+        }
+        System.out.println();
+        while (rs.next()) {
+            for (int i = 1; i <= columnCount; i++) {
+                String columnValue = rs.getString(i);
+                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
+            }
+            System.out.println();
+        }
+        rs.close();
+        stmt.close();
+    }
+    public static void mostrarAutores(Connection conn) throws SQLException {
+        String sql = "SELECT * FROM autores";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+
+        int[] columnWidths = {20, 20, 20, 20};
+        
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        for (int i=1; i <= columnCount; i++) {
+            String columnName = rsmd.getColumnName(i);
+            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
+        }
+        System.out.println();
+        while (rs.next()) {
+            for (int i = 1; i <= columnCount; i++) {
+                String columnValue = rs.getString(i);
+                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
+            }
+            System.out.println();
+        }
+        rs.close();
+        stmt.close();
+    }
+    public static void mostrarEjemplaresByIsbn(Connection conn, String isbn) throws SQLException {
+        String sql = "SELECT * FROM Ejemplares WHERE isbn = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, isbn);
+        ResultSet rs = stmt.executeQuery();
+
+        int[] columnWidths = {15, 20, 20, 20, 25};
         
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
@@ -279,7 +354,7 @@ public class Io{
         return numSS;
     }
     public static void eliminarUsuario(Connection conn, Scanner scanner) throws SQLException {
-        getUsuarios(conn);
+        mostrarUsuarios(conn);
         sop("Introduce el codigo del usuario a eliminar:");
         String codUsuario = scanner.nextLine();
         String sql = "DELETE FROM usuarios WHERE cod_usuario = ?";
@@ -559,7 +634,97 @@ public class Io{
         scanner.nextLine();
         Io.clearScreen();
     }
-    
+    public static void hacerPrestamo(Connection conn, Scanner scanner) throws SQLException {
+        sop("Introduce el nombre del usuario:");
+        String nombre = scanner.nextLine();
+        String codUsuario = getCodUsuarioByNombre(conn, scanner, nombre);
+        if (codUsuario.isEmpty()) {
+            sop("No se encontro ningun usuario con ese nombre.");
+            return;
+        }
+        mostrarLibros(conn);
+        sop("Introduce el isbn del libro que quiere:");
+        String isbn = scanner.nextLine();
+        mostrarEjemplaresByIsbn(conn, isbn);
+        sop("Introduce el codigo del ejemplar:");
+        int codEjemplar = scanner.nextInt();
+        scanner.nextLine();
+        while  (!comprobarDisponibilidad(conn,codEjemplar)){
+            sop("El ejemplar no esta disponible. Introduce otro codigo:");
+            codEjemplar = scanner.nextInt();
+            scanner.nextLine();
+        }
+        LocalDate hoy = LocalDate.now();
+        LocalDate entrega = hoy.plusDays(30);
+
+        Date fechaPrestamo = Date.valueOf(hoy);
+        Date fechaEntrega = Date.valueOf(entrega);
+        int codPrest = (int) (Math.random()*1000)+1;
+        while (comprobarCodigo(conn, codPrest)) {
+            codPrest = (int) (Math.random()*1000)+1;
+        }
+        insertarPrestamo(conn, codPrest, fechaPrestamo, fechaEntrega, codPrest);
+        actualizarEjemplar(conn, codPrest, codEjemplar);
+    }
+    public static String  getCodUsuarioByNombre(Connection conn, Scanner scanner, String nombre) throws SQLException {
+        String sql = "SELECT cod_usuario FROM usuarios WHERE nombre_usuario = ?";
+        String codUsuario = null;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nombre);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                codUsuario = rs.getString("cod_usuario");
+                return codUsuario;
+            } else {
+                sop("No se encontro ningun usuario con ese nombre.");
+            }
+        } catch (SQLException e) {
+            sop("Error al buscar el usuario: " + e.getMessage());
+        }
+        return codUsuario;
+    }
+    public static boolean comprobarDisponibilidad(Connection conn, int codEjemplar) throws SQLException {
+        String sql = "SELECT * FROM ejemplares WHERE cod_ejem = ? AND estado = 'disponible'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codEjemplar);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        }
+    }
+    public static boolean algunaDisponibilidad(Connection conn) throws SQLException {
+        String sql = "SELECT * FROM ejemplares WHERE estado = 'disponible'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        }
+    }
+    public static void insertarPrestamo(Connection conn, int codPrest, Date fecha_prestamo, Date fecha_entrega, int codUsuario ) throws SQLException {
+        String sql = "INSERT INTO prestamos (cod_prest, fecha_prestamo, fecha_entrega, fecha_devolucion, cod_usuario) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codPrest);
+            stmt.setDate(2, fecha_prestamo);
+            stmt.setDate(3, fecha_entrega);
+            stmt.setNull(4, java.sql.Types.DATE);
+            stmt.setInt(5, codUsuario);
+            stmt.executeUpdate();
+            stmt.close();
+            sop("Prestamo realizado correctamente.");
+        } catch (SQLException e) {
+            sop("Error al realizar el prestamo: " + e.getMessage());
+        }
+    }
+    public static void actualizarEjemplar(Connection conn, int codPrest, int codEjemplar) throws SQLException {
+        String sql = "UPDATE ejemplares SET estado = 'prestado', cod_prest = ? WHERE cod_ejem = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codPrest);
+            stmt.setInt(2, codEjemplar);
+            stmt.executeUpdate();
+            stmt.close();
+            sop("Estado del ejemplar actualizado");
+        } catch (SQLException e) {
+            sop("Error al actualizar el estado del ejemplar: " + e.getMessage());
+        }
+    }
 }
 
 
