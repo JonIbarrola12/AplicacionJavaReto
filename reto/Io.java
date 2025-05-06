@@ -362,7 +362,7 @@ public class Io{
                 while (comprobarCodigo(conn, codigo)) {
                     codigo = (int) (Math.random()*1000)+1;
                 }
-
+                
                 stmt.setInt(1, codigo);
                 stmt.setString(2, "Usuario" + codigo);
                 stmt.setString(3, "BibliotecaMuskiz" + codigo);
