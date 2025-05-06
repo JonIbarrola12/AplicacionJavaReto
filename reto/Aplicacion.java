@@ -79,11 +79,7 @@ public class Aplicacion{
                 case 8:
                     Io.crearCienUsuarios(conn);
                     Io.continuar(scanner);
-                    break;   
-                case 9:
-                    Io.borrarTablaUsuarios(conn);
-                    Io.continuar(scanner);
-                    break;          
+                    break;           
                 case 10:
         
                     
