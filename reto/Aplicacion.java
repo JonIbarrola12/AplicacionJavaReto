@@ -25,7 +25,7 @@ public class Aplicacion{
             Io.sop("3. Mostrar usuarios                                             4. Eliminar 1 usuario  ");
             Io.sop("5. Realizar la desconexion                                      6. Buscar Dni          ");
             Io.sop("7. Gestionar Tablas (Crear/Borrar)                              8. Crear 100 Usuarios  ");
-            Io.sop("9. Borrar Tabla Usuarios                                        10. Mostrar Usuarios Paginando");
+            Io.sop("9.                                                              10. Mostrar Usuarios Paginando");
             Io.sop("11. Aumentar el tamaño del CMD                                  12. Disminuir el tamaño del CMD");
             Io.sop("13. Mostrar campos de la Tabla");
             Io.sop("0. Salir");
