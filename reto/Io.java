@@ -333,15 +333,74 @@ public class Io{
             return rs.next();
         }
     }
+    public static void crearTablas(Connection conn, Scanner scanner) {
+        
+        sop("Que tabla quieres crear? (u/ l/ a/ e)");
+        String opcion=scanner.nextLine();
+        switch (opcion) {
+            case "u":
+                crearTablaUsuarios(conn);
+                break;
+            case "l":
+                crearTablaLibros(conn);
+                break;
+            case "a":
+                crearTablaAutores(conn);
+                break;
+            case "e":
+                crearTablaEjemplares(conn);
+                break;
+            default:
+                sop("opcion incorrecta");
+                break;
+        }
+
+    }
+    public static void borrarTablas(Connection conn, Scanner scanner) {
+        
+        sop("Que tabla quieres crear? (u/ l/ a/ e)");
+        String opcion=scanner.nextLine();
+        switch (opcion) {
+            case "u":
+                borrarTablaUsuarios(conn);
+                break;
+            case "l":
+                borrarTablaLibros(conn);
+                break;
+            case "a":
+                borrarTablaAutores(conn);
+                break;
+            case "e":
+                borrarTablaEjemplares(conn);
+                break;
+            default:
+                sop("opcion incorrecta");
+                break;
+        }
+
+    }
+    public static void gestionarTablas(Connection conn, Scanner scanner) {
+        sop("Quieres Crear o Eliminar una Tabla  (c/b)");
+        String opcion=scanner.nextLine();
+        switch (opcion) {
+            case "c":
+                crearTablas(conn, scanner);
+                break;
+            case "b":
+                borrarTablas(conn, scanner);
+                break;
+        }
+
+    }
     public static void crearTablaUsuarios(Connection conn) {
         try {
             String sql = "CREATE TABLE usuarios (" +
                          "cod_usuario INT PRIMARY KEY, " +
-                         "nombre_usuario VARCHAR(100), " +
-                         "contrasena VARCHAR(100), " +
+                         "nombre_usuario VARCHAR(40), " +
+                         "contrasena VARCHAR(20), " +
                          "telefono VARCHAR(20), " +
                          "direccion VARCHAR(255), " +
-                         "correo_elec VARCHAR(100), " +
+                         "correo_elec VARCHAR(50), " +
                          "num_ss VARCHAR(20))";
             Statement stmt = conn.createStatement();
             stmt.execute(sql);
@@ -351,6 +410,54 @@ public class Io{
             sop("Error al crear la tabla: " + e.getMessage());
         }
     }
+    public static void crearTablaAutores(Connection conn) {
+        try {
+            String sql = "CREATE TABLE autores (" +
+                         "dni varchar2(20) PRIMARY KEY, " +
+                         "nombre VARCHAR(20), " +
+                         "ape1 VARCHAR(20), " +
+                         "ape2 VARCHAR(20))";
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+            stmt.close();
+            sop("Tabla 'autores' creada correctamente.");
+        } catch (SQLException e) {
+            sop("Error al crear la tabla: " + e.getMessage());
+        }
+    }
+    public static void crearTablaEjemplares(Connection conn) {
+        try {
+            String sql = "CREATE TABLE ejemplares (" +
+                         "cod_ejem int(5) PRIMARY KEY, " +
+                         "idioma VARCHAR(20), " +
+                         "estado VARCHAR(30), " +
+                         "isbn VARCHAR(13), " +
+                         "cod_prest int(5))";
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+            stmt.close();
+            sop("Tabla 'ejemplares' creada correctamente.");
+        } catch (SQLException e) {
+            sop("Error al crear la tabla: " + e.getMessage());
+        }
+    }
+    public static void crearTablaLibros(Connection conn) {
+        try {
+            String sql = "CREATE TABLE libros (" +
+                         "isbn int(13) PRIMARY KEY, " +
+                         "titulo VARCHAR(20), " +
+                         "paginas VARCHAR(30), " +
+                         "urlimg VARCHAR(13))";
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+            stmt.close();
+            sop("Tabla 'libros' creada correctamente.");
+        } catch (SQLException e) {
+            sop("Error al crear la tabla: " + e.getMessage());
+        }
+    }
+
+
 
     public static void crearCienUsuarios(Connection conn) {
         try {
@@ -386,6 +493,42 @@ public class Io{
             Statement stmt = conn.createStatement();
             stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
             stmt.executeUpdate("DROP TABLE IF EXISTS usuarios");
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+            stmt.close();
+            sop("Tabla eliminada correctamente");
+        } catch (SQLException e) {
+            sop("Error al eliminar las tabla: " + e.getMessage());
+        }
+    }
+    public static void borrarTablaLibros(Connection conn) {
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+            stmt.executeUpdate("DROP TABLE IF EXISTS libros");
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+            stmt.close();
+            sop("Tabla eliminada correctamente");
+        } catch (SQLException e) {
+            sop("Error al eliminar las tabla: " + e.getMessage());
+        }
+    }
+    public static void borrarTablaEjemplares(Connection conn) {
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+            stmt.executeUpdate("DROP TABLE IF EXISTS ejemplares");
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+            stmt.close();
+            sop("Tabla eliminada correctamente");
+        } catch (SQLException e) {
+            sop("Error al eliminar las tabla: " + e.getMessage());
+        }
+    }
+    public static void borrarTablaAutores(Connection conn) {
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+            stmt.executeUpdate("DROP TABLE IF EXISTS autores");
             stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
             stmt.close();
             sop("Tabla eliminada correctamente");
