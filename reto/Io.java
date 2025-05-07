@@ -250,14 +250,17 @@ public class Io{
         //Comprobamos el nombre para que no se repita ya que es unn campo unique de la tabla usuarios
         while(comprobarNombre(conn, nombre)){
             nombre = Azar.getNombre();
+            Azar.comprobarCont();
         }
         //Comprobamos el telefono para que no se repita ya que es unn campo unique de la tabla usuarios
         while(comprobarTelefono(conn, Azar.getTelefono())){
             telefono = Azar.getTelefono();
+            Azar.comprobarCont();
         }
         //Comprobamos el numero de la seguridad social para que no se repita ya que es unn campo unique de la tabla usuarios
         while(comprobarNumSS(conn, Azar.getNumSS())){
             numSS = Azar.getNumSS();
+            Azar.comprobarCont();
         }
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, codUsuario);
@@ -299,6 +302,7 @@ public class Io{
         }
 
         String correo = Io.generarCorreoManual(conn, scanner);
+
         if (opcion.equalsIgnoreCase("t")) {
             numSS= Io.generarNumSSManual(conn, scanner);
         }
