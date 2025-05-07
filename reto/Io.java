@@ -8,6 +8,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Scanner;
 
@@ -104,6 +105,33 @@ public class Io{
         int anio = cal.get(Calendar.YEAR);
         return (dia +"/" + mes + "/" + anio);
     }
+    public static void mostrarRegistros(Connection conn, Scanner scanner) throws SQLException {
+        sop("Que tabla quieres mostrar? (u/ l/ a/ e /pr /pe )");
+        String opcion = scanner.nextLine();
+        switch (opcion) {
+            case "u":
+                mostrarUsuarios(conn);
+                break;
+            case "l":
+                mostrarLibros(conn);
+                break;
+            case "a":
+                mostrarAutores(conn);
+                break;
+            case "e":
+                mostrarEjemplares(conn);
+                break;
+            case "pr":
+                mostrarPrestamos(conn);
+                break;
+            case "pe":
+                mostrarPenalizaciones(conn);
+                break;
+            default:
+                sop("opcion incorrecta");
+                break;
+        }
+    }
     public static void mostrarUsuarios(Connection conn) throws SQLException {
         String sql = "SELECT * FROM usuarios";
         PreparedStatement stmt = conn.prepareStatement(sql);
@@ -133,7 +161,7 @@ public class Io{
         PreparedStatement stmt = conn.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
 
-        int[] columnWidths = {20, 50, 20};
+        int[] columnWidths = {20, 60, 20};
         
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
@@ -176,13 +204,85 @@ public class Io{
         rs.close();
         stmt.close();
     }
+    public static void mostrarEjemplares(Connection conn) throws SQLException {
+        String sql = "SELECT * FROM ejemplares";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+
+        int[] columnWidths = {15, 20, 20, 20, 20};
+        
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        for (int i=1; i <= columnCount; i++) {
+            String columnName = rsmd.getColumnName(i);
+            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
+        }
+        System.out.println();
+        while (rs.next()) {
+            for (int i = 1; i <= columnCount; i++) {
+                String columnValue = rs.getString(i);
+                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
+            }
+            System.out.println();
+        }
+        rs.close();
+        stmt.close();
+    }
+    public static void mostrarPrestamos(Connection conn) throws SQLException {
+        String sql = "SELECT * FROM prestamos";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+
+        int[] columnWidths = {15, 20, 20, 20, 15};
+        
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        for (int i=1; i <= columnCount; i++) {
+            String columnName = rsmd.getColumnName(i);
+            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
+        }
+        System.out.println();
+        while (rs.next()) {
+            for (int i = 1; i <= columnCount; i++) {
+                String columnValue = rs.getString(i);
+                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
+            }
+            System.out.println();
+        }
+        rs.close();
+        stmt.close();
+    }
+    public static void mostrarPenalizaciones (Connection conn) throws SQLException {
+        String sql = "SELECT * FROM penalizaciones";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+
+        int[] columnWidths = {15, 20, 20, 20};
+        
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        for (int i=1; i <= columnCount; i++) {
+            String columnName = rsmd.getColumnName(i);
+            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
+        }
+        System.out.println();
+        while (rs.next()) {
+            for (int i = 1; i <= columnCount; i++) {
+                String columnValue = rs.getString(i);
+                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
+            }
+            System.out.println();
+        }
+        rs.close();
+        stmt.close();
+    }
     public static void mostrarEjemplaresByIsbn(Connection conn, String isbn) throws SQLException {
         String sql = "SELECT * FROM Ejemplares WHERE isbn = ?";
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setString(1, isbn);
         ResultSet rs = stmt.executeQuery();
 
-        int[] columnWidths = {15, 20, 20, 20, 25};
+        int[] columnWidths = {15, 20, 20, 20, 20};
         
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
@@ -382,6 +482,17 @@ public class Io{
         }
         return numSS;
     }
+    public static void generarPenalizaciones(Connection conn, Scanner scanner, String codUsuario, int diasDePenalizacion, Date fechaPenalizacion ) throws SQLException {
+        String sql = "INSERT INTO penalizaciones (cod_usuario, fecha_pen, dias_pen, cod_usuario) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, codUsuario);
+            stmt.setDate(2, fechaPenalizacion);
+            stmt.setInt(3, diasDePenalizacion);
+            stmt.setString(4, codUsuario);
+            stmt.executeUpdate();
+            sop("Penalizacion registrada correctamente.");
+        }
+    }
     public static void eliminarUsuario(Connection conn, Scanner scanner) throws SQLException {
         mostrarUsuarios(conn);
         sop("Introduce el codigo del usuario a eliminar:");
@@ -394,6 +505,19 @@ public class Io{
                 sop("Usuario eliminado correctamente.");
             } else {
                 sop("No se encontro ningun usuario con ese codigo.");
+            }
+        }
+    }
+    public static void eliminarPrestamo(Connection conn, String codUsuario, int codPrestamo) throws SQLException {
+        String sql = "DELETE FROM prestamos WHERE cod_prest = ? AND cod_usuario = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codPrestamo);
+            stmt.setString(2, codUsuario);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                sop("Prestamo eliminado correctamente.");
+            } else {
+                sop("No se encontro ningun prestamo con ese codigo.");
             }
         }
     }
@@ -666,11 +790,11 @@ public class Io{
     public static void hacerPrestamo(Connection conn, Scanner scanner) throws SQLException {
         sop("Introduce el nombre del usuario:");
         String nombre = scanner.nextLine();
-        String codUsuario = getCodUsuarioByNombre(conn, scanner, nombre);
-        if (codUsuario.isEmpty()) {
-            sop("No se encontro ningun usuario con ese nombre.");
-            return;
+        while (!comprobarNombre(conn, nombre)) {
+            sop("El nombre no existe. Introduce otro nombre:");
+            nombre = scanner.nextLine();
         }
+        String codUsuario = getCodUsuarioByNombre(conn, scanner, nombre);
         mostrarLibros(conn);
         sop("Introduce el isbn del libro que quiere:");
         String isbn = scanner.nextLine();
@@ -692,7 +816,7 @@ public class Io{
         while (comprobarCodigo(conn, codPrest)) {
             codPrest = (int) (Math.random()*1000)+1;
         }
-        insertarPrestamo(conn, codPrest, fechaPrestamo, fechaEntrega, codPrest);
+        insertarPrestamo(conn, codPrest, fechaPrestamo, fechaEntrega, codUsuario);
         actualizarEjemplar(conn, codPrest, codEjemplar);
     }
     public static String  getCodUsuarioByNombre(Connection conn, Scanner scanner, String nombre) throws SQLException {
@@ -727,14 +851,14 @@ public class Io{
             return rs.next(); 
         }
     }
-    public static void insertarPrestamo(Connection conn, int codPrest, Date fecha_prestamo, Date fecha_entrega, int codUsuario ) throws SQLException {
+    public static void insertarPrestamo(Connection conn, int codPrest, Date fecha_prestamo, Date fecha_entrega, String codUsuario ) throws SQLException {
         String sql = "INSERT INTO prestamos (cod_prest, fecha_prestamo, fecha_entrega, fecha_devolucion, cod_usuario) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, codPrest);
             stmt.setDate(2, fecha_prestamo);
             stmt.setDate(3, fecha_entrega);
             stmt.setNull(4, java.sql.Types.DATE);
-            stmt.setInt(5, codUsuario);
+            stmt.setString(5, codUsuario);
             stmt.executeUpdate();
             stmt.close();
             sop("Prestamo realizado correctamente.");
@@ -773,8 +897,20 @@ public class Io{
         }
         LocalDate hoy = LocalDate.now();
         Date fechaDevolucion = Date.valueOf(hoy);
-        actualizarPrestamo(conn, codPrestamo, codUsuario, fechaDevolucion);
-        
+        actualizarFechaPrestamo(conn, codPrestamo, codUsuario, fechaDevolucion);
+        Date fechaEntrega = getFechaEntrega(conn, codPrestamo);
+        int diasPrestado = diferenciaFechas(fechaEntrega, fechaDevolucion);
+        if (diasPrestado > 30) {
+            int diasDePenalizacion = (diasPrestado - 30) * 2;;
+            generarPenalizaciones(conn, scanner, codUsuario, diasDePenalizacion, fechaEntrega);
+            eliminarPrestamo(conn, codUsuario, codPrestamo);
+            actualizarEjemplarDevolucion(conn, codPrestamo);
+            sop("El libro ha sido devuelto, pero has recibido una penalizacion de " + diasDePenalizacion + " dias.");
+        } else {
+            eliminarPrestamo(conn, codUsuario, codPrestamo);
+            actualizarEjemplarDevolucion(conn, codPrestamo);
+            sop("El libro ha sido devuelto a tiempo.");
+        }
     }
     public static boolean comprobarPrestamo(Connection conn, int codPrestamo, String codUsuario) throws SQLException {
         String sql = "SELECT * FROM prestamos WHERE cod_prest = ? AND cod_usuario = ?";
@@ -785,7 +921,7 @@ public class Io{
             return rs.next(); 
         }
     }
-    public static void actualizarPrestamo(Connection conn, int codPrestamo, String codUsuario, Date fechaDevolucion) throws SQLException {
+    public static void actualizarFechaPrestamo(Connection conn, int codPrestamo, String codUsuario, Date fechaDevolucion) throws SQLException {
         String sql = "UPDATE prestamos SET fecha_devolucion = ? WHERE cod_prest = ? AND cod_usuario = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setDate(1, fechaDevolucion);
@@ -798,6 +934,37 @@ public class Io{
             sop("Error al devolver el prestamo: " + e.getMessage());
         }
     }
+    public static void actualizarEjemplarDevolucion(Connection conn, int codPrestamo) throws SQLException {
+        String sql = "UPDATE ejemplares SET estado = 'disponible', cod_prest = NULL WHERE cod_prest = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codPrestamo);
+            stmt.executeUpdate();
+            stmt.close();
+            sop("Ejemplar actualizado correctamente.");
+        } catch (SQLException e) {
+            sop("Error al actualizar el ejemplar: " + e.getMessage());
+        }
+    }
+    public static Date getFechaEntrega(Connection conn, int codPrestamo) throws SQLException {
+        String sql = "SELECT fecha_entrega FROM prestamos WHERE cod_prest = ?";
+        Date fechaEntrega = null;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codPrestamo);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                fechaEntrega = rs.getDate("fecha_entrega");
+            }
+        } catch (SQLException e) {
+            sop("Error al obtener la fecha de entrega: " + e.getMessage());
+        }
+        return fechaEntrega;
+    }
+    public static int diferenciaFechas(Date fecha1, Date fecha2) {
+        LocalDate localDate1 = fecha1.toLocalDate();
+        LocalDate localDate2 = fecha2.toLocalDate();
+        return (int) ChronoUnit.DAYS.between(localDate1, localDate2);
+    }
+
 }
 
 

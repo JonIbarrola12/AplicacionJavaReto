@@ -22,7 +22,7 @@ public class Aplicacion{
             Io.sop("***************************************************************************************");
             Io.sop("\n                               === OPCIONES BASICAS ===                              ");
             Io.sop("1. Comprobar/Establecer conexion                                2. Generar 1 usuario   ");                                                                                            
-            Io.sop("3. Mostrar usuarios                                             4. Eliminar 1 usuario  ");
+            Io.sop("3. Mostrar Registros                                            4. Eliminar 1 usuario  ");
             Io.sop("5. Realizar la desconexion                                      6. Buscar Dni          ");
             Io.sop("7. Gestionar Tablas (Crear/Borrar)                              8. Devolver Prestamo    ");
             Io.sop("9. Hacer Prestamo                                               10. Mostrar Usuarios Paginando");
@@ -50,7 +50,7 @@ public class Aplicacion{
                     break;
                 case 3:
                     try {
-                        Io.mostrarUsuarios(conn);
+                        Io.mostrarRegistros(conn, scanner);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -122,6 +122,7 @@ public class Aplicacion{
                 default:
                 Io.sop("Opción no válida. Intenta de nuevo.");
             }
+            Io.clearScreen();
         } while (opcion != 0);
 
         scanner.close();
