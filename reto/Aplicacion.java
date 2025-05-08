@@ -21,13 +21,13 @@ public class Aplicacion{
             Io.sop("*                                Aplicacion Grupo/Talde 1            "+fechaActual +"         *");
             Io.sop("***************************************************************************************");
             Io.sop("\n                               === OPCIONES BASICAS ===                              ");
-            Io.sop("1. Comprobar/Establecer conexion                                2. Generar 1 usuario   ");                                                                                            
-            Io.sop("3. Mostrar Registros                                            4. Eliminar 1 usuario  ");
-            Io.sop("5. Realizar la desconexion                                      6. Buscar Dni          ");
+            Io.sop("1. Comprobar/Establecer conexion                                2. Generar 1 Registro   ");                                                                                            
+            Io.sop("3. Mostrar Registros                                            4. Eliminar 1 Registro  ");
+            Io.sop("5. Realizar la desconexion                                      6. Buscar por Clave Primaria");
             Io.sop("7. Gestionar Tablas (Crear/Borrar)                              8. Devolver Prestamo    ");
             Io.sop("9. Hacer Prestamo                                               10. Mostrar Usuarios Paginando");
             Io.sop("11. Aumentar el tamaño del CMD                                  12. Disminuir el tamaño del CMD");
-            Io.sop("13. Mostrar campos de la Tabla");
+            Io.sop("13. Mostrar campos de la Tablas");
             Io.sop("0. Salir");
             Io.sop("\nElige una opción: ");
 
@@ -69,7 +69,7 @@ public class Aplicacion{
                     Io.continuar(scanner);
                     break;
                 case 6:
-                    Io.buscarPorCodUsuario(conn, scanner);
+                    Io.buscarPorClavePrimaria(conn, scanner);
                     Io.continuar(scanner);
                     break; 
                 case 7:
@@ -98,18 +98,18 @@ public class Aplicacion{
                     
                 case 11:
                 // Aumentar tamaño
-                Io.aumentarFuenteCmd(16);
-                Io.Sop("Se va a cerrar el programa para que los cambios");
-                Io.Sop("tengan efecto");
-                opc='0';
-                break;
+                    Io.aumentarFuenteCmd(16);
+                    Io.Sop("Se va a cerrar el programa para que los cambios");
+                    Io.Sop("tengan efecto");
+                    opc='0';
+                    break;
                 case 12:
                     // Disminuir tamaño
                     Io.aumentarFuenteCmd(28);
-		Io.Sop("Se va a cerrar el programa para que los cambios");
-		Io.Sop("tengan efecto");
-		opc='0';
-		break;
+                    Io.Sop("Se va a cerrar el programa para que los cambios");
+                    Io.Sop("tengan efecto");
+                    opc='0';
+                    break;
                 case 13:
                     Io.mostrarCamposTablaUsuarios(conn);
                     Io.continuar(scanner);

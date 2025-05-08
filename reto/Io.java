@@ -71,6 +71,29 @@ public class Io{
         }
         return -1; // Valor por defecto si falla
     }
+    public static void buscarPorClavePrimaria(Connection conn, Scanner scanner) {
+        
+        sop("En que tabla buscas el registro por clave primaria? (u/ l/ a/ e)");
+        String opcion=scanner.nextLine();
+        switch (opcion) {
+            case "u":
+                buscarPorCodUsuario(conn, scanner);
+                break;
+            case "l":
+                buscarPorCodLibro(conn, scanner);
+                break;
+            case "a":
+                buscarPorCodAutor(conn, scanner);
+                break;
+            case "e":
+                buscarPorCodEjemplares(conn, scanner);
+                break;
+            default:
+                sop("opcion incorrecta");
+                break;
+        }
+
+    }
     public static void buscarPorCodUsuario(Connection conn, Scanner scanner) {
         System.out.print("Introduce el codigo del usuario:");
         String codUsuario = scanner.nextLine();
@@ -99,6 +122,85 @@ public class Io{
             sop("Error al buscar el usuario: " + e.getMessage());
         }
     }
+    public static void buscarPorCodLibro(Connection conn, Scanner scanner) {
+        System.out.print("Introduce el (ISBN) del libro: ");
+        String codLibro = scanner.nextLine();
+    
+        try {
+            String query = "SELECT * FROM libros WHERE cod_libro = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, codLibro);
+            ResultSet rs = stmt.executeQuery();
+    
+            if (rs.next()) {
+                sop("Libro encontrado:");
+                sop("ISBN: " + rs.getString("cod_libro"));
+                sop("Título: " + rs.getString("titulo"));
+                sop("Páginas: " + rs.getInt("paginas"));
+                sop("URL de la imagen: " + rs.getString("url_img"));
+            } else {
+                sop("No se encontró ningún libro.");
+            }
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            sop("Error al buscar el libro: " + e.getMessage());
+        }
+    }
+    public static void buscarPorCodAutor(Connection conn, Scanner scanner) {
+        System.out.print("Introduce el DNI del autor: ");
+        String dniAutor = scanner.nextLine();
+
+        try {
+            String query = "SELECT * FROM autores WHERE dni = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, dniAutor);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                sop("Autor encontrado:");
+                sop("DNI: " + rs.getString("dni"));
+                sop("Nombre: " + rs.getString("nombre"));
+                sop("Primer apellido: " + rs.getString("ape1"));
+                sop("Segundo apellido: " + rs.getString("ape2"));
+            } else {
+                sop("No se encontró ningún autor con ese DNI.");
+            }
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            sop("Error al buscar el autor: " + e.getMessage());
+        }
+    }
+    public static void buscarPorCodEjemplares(Connection conn, Scanner scanner) {
+        System.out.print("Introduce el código del ejemplar: ");
+        String codEjem = scanner.nextLine();
+
+        try {
+            String query = "SELECT * FROM ejemplares WHERE cod_ejem = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, codEjem);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                sop("Ejemplar encontrado:");
+                sop("Código ejemplar: " + rs.getString("cod_ejem"));
+                sop("Idioma: " + rs.getString("idioma"));
+                sop("Estado: " + rs.getString("estado"));
+                sop("ISBN: " + rs.getString("isbn"));
+                sop("Código de préstamo: " + rs.getString("cod_prest"));
+            } else {
+                sop("No se encontró ningún ejemplar.");
+            }
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            sop("Error al buscar el ejemplar: " + e.getMessage());
+        }
+       
+    }
+
+
     public static void clearScreen(){
         try{
             if (System.getProperty("os.name").contains("Windows")){
