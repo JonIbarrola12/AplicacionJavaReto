@@ -1330,6 +1330,93 @@ public class Io{
         LocalDate localDate2 = fecha2.toLocalDate();
         return (int) ChronoUnit.DAYS.between(localDate1, localDate2);
     }
+    public static void mostrarUsuariosPaginados(Connection conn, Scanner scanner){
+        int pagina = 0;
+        int tamanioPagina = 10;
+        int totalUsuarios = 0;
+
+        try{
+            String conteo = "SELECT COUNT(*) FROM usuarios";
+            PreparedStatement stmtConteo = conn.prepareStatement(conteo);
+            ResultSet rsConteo = stmtConteo.executeQuery();
+
+            if (rsConteo.next()){
+                totalUsuarios = rsConteo.getInt(1);
+            }
+
+            rsConteo.close();
+            stmtConteo.close();
+
+            if (totalUsuarios == 0){
+                sop("No hay usuarios en la base de datos");
+                return;
+            }
+
+            char opcion = ' ';
+            int totalPaginas = (totalUsuarios + tamanioPagina - 1) / tamanioPagina;
+
+            do {
+                Io.clearScreen();
+                sop("Mostrando usuarios - Pagina " + (pagina + 1) + " de " + totalPaginas + "\n");
+
+                String sql = "SELECT * FROM usuarios LIMIT ? OFFSET ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, tamanioPagina);
+                stmt.setInt(2, pagina * tamanioPagina);
+                ResultSet rs = stmt.executeQuery();
+
+                ResultSetMetaData rsmd = rs.getMetaData();
+                int columnCount = rsmd.getColumnCount();
+
+                for (int i = 1; i <= columnCount; i++){
+                    System.out.printf("%-20s", rsmd.getColumnName(i));
+                }
+                System.out.println();
+                System.out.println("------------------------------------------------------------------------------------------");
+
+                while (rs.next()) {
+                    for (int i = 1; i <= columnCount; i++){
+                        System.out.printf("%-20s", rs.getString(i));
+                    }
+                    System.out.println();
+                }
+                rs.close();
+                stmt.close();
+
+                sop("\nNavegar: '+' siguiente, '-' anterior, 'q' salir.");
+                String input = scanner.nextLine();
+                if (!input.isEmpty()){
+                    opcion = input.charAt(0);
+                
+
+                    switch (opcion) {
+                        case '+':
+                            pagina = (pagina + 1) % totalPaginas; 
+                            break;
+                        case '-':
+                            pagina = (pagina - 1 + totalPaginas) % totalPaginas;
+                            break;
+                        case 'q':
+                            break;
+                        default:
+                            sop("Opcion invalida. Usa '+' para avanzar, '-' para retroceder o 'q' para salir.");
+
+                            sop("Presiona Enter para continuar...");
+                            scanner.nextLine();
+                            break;
+                    }
+                } else if (!input.isEmpty()){
+                    sop("Usa solo '+', '-' o 'q'.");
+                    sop("Presiona Enter para continuar...");
+                    scanner.nextLine();
+                }
+
+            } while (opcion != 'q');
+
+        } catch (SQLException e){
+            sop("Error al mostrar usuarios paginados: " + e.getMessage());
+        }
+    }
 
 }
 
