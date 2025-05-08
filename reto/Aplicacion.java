@@ -94,8 +94,10 @@ public class Aplicacion{
                     Io.continuar(scanner);
                     break;
                 case 10:
-        
-                    
+                    Io.mostrarUsuariosPaginados(conn, scanner);
+                    Io.sop("Presiona Enter para continuar...");
+                    scanner.nextLine();
+                    break;  
                 case 11:
                 // Aumentar tamaño
                     Io.aumentarFuenteCmd(16);
