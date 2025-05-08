@@ -2,7 +2,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-public class Aplicacion{
+public class Aplicacion{ 
     
     public static void main(String[] args) {
         char opc;
