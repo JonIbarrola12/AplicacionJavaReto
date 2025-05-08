@@ -111,7 +111,7 @@ public class Aplicacion{
                     opc='0';
                     break;
                 case 13:
-                    Io.mostrarCamposTablaUsuarios(conn);
+                    Io.mostrarCampos(conn, scanner);
                     Io.continuar(scanner);
                     break; 
                 case 0:

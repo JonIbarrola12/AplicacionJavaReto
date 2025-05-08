@@ -73,7 +73,7 @@ public class Io{
     }
     public static void buscarPorClavePrimaria(Connection conn, Scanner scanner) {
         
-        sop("En que tabla buscas el registro por clave primaria? (u/ l/ a/ e)");
+        sop("En que tabla buscas el registro por clave primaria? (u/ l/ a/ e/ pr/ pe)");
         String opcion=scanner.nextLine();
         switch (opcion) {
             case "u":
@@ -87,6 +87,12 @@ public class Io{
                 break;
             case "e":
                 buscarPorCodEjemplares(conn, scanner);
+                break;
+            case "pr":
+                buscarPorCodPrestamo(conn, scanner);
+                break;
+            case "pe":
+                buscarPorCodPenalizacion(conn, scanner);
                 break;
             default:
                 sop("opcion incorrecta");
@@ -198,6 +204,58 @@ public class Io{
             sop("Error al buscar el ejemplar: " + e.getMessage());
         }
        
+    }
+    public static void buscarPorCodPrestamo(Connection conn, Scanner scanner) {
+        System.out.print("Introduce el código del préstamo: ");
+        String codPrestamo = scanner.nextLine();
+    
+        try {
+            String query = "SELECT * FROM prestamos WHERE cod_prest = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, codPrestamo);
+            ResultSet rs = stmt.executeQuery();
+    
+            if (rs.next()) {
+                sop("Préstamo encontrado:");
+                sop("Código préstamo: " + rs.getString("cod_prest"));
+                sop("Fecha de préstamo: " + rs.getDate("fecha_prestamo"));
+                sop("Fecha de entrega: " + rs.getDate("fecha_entrega"));
+                sop("Fecha de devolución: " + rs.getDate("fecha_devolucion"));
+                sop("Código de usuario: " + rs.getString("cod_usuario"));
+            } else {
+                sop("No se encontró ningún préstamo con ese código.");
+            }
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            sop("Error al buscar el préstamo: " + e.getMessage());
+        }
+    }
+    public static void buscarPorCodPenalizacion(Connection conn, Scanner scanner) {
+        System.out.print("Introduce el ID de la penalización: ");
+        String idPenalizacion = scanner.nextLine();
+    
+        try {
+            String query = "SELECT * FROM penalizaciones WHERE id = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, idPenalizacion);
+            ResultSet rs = stmt.executeQuery();
+    
+            if (rs.next()) {
+                sop("Penalización encontrada:");
+                sop("ID: " + rs.getString("id"));
+                sop("Código de usuario: " + rs.getString("cod_usuario"));
+                sop("Motivo: " + rs.getString("motivo"));
+                sop("Fecha de inicio: " + rs.getDate("fecha_inicio"));
+                sop("Fecha de fin: " + rs.getDate("fecha_fin"));
+            } else {
+                sop("No se encontró ninguna penalización con ese ID.");
+            }
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            sop("Error al buscar la penalización: " + e.getMessage());
+        }
     }
 
 
@@ -677,7 +735,7 @@ public class Io{
     }
     public static void crearTablas(Connection conn, Scanner scanner) {
         
-        sop("Que tabla quieres crear? (u/ l/ a/ e)");
+        sop("Que tabla quieres crear? (u/ l/ a/ e/ pr/ pe)");
         String opcion=scanner.nextLine();
         switch (opcion) {
             case "u":
@@ -692,6 +750,12 @@ public class Io{
             case "e":
                 crearTablaEjemplares(conn);
                 break;
+            case "pr":
+                crearTablaPrestamos(conn);
+                break;
+            case "pe":
+                crearTablaPenalizaciones(conn);
+                break;
             default:
                 sop("opcion incorrecta");
                 break;
@@ -700,7 +764,7 @@ public class Io{
     }
     public static void borrarTablas(Connection conn, Scanner scanner) {
         
-        sop("Que tabla quieres crear? (u/ l/ a/ e)");
+        sop("Que tabla quieres crear? (u/ l/ a/ e/ pr/ pe)");
         String opcion=scanner.nextLine();
         switch (opcion) {
             case "u":
@@ -714,6 +778,12 @@ public class Io{
                 break;
             case "e":
                 borrarTablaEjemplares(conn);
+                break;
+            case "pr":
+                borrarTablaPrestamos(conn);
+                break;
+            case "pe":
+                borrarTablaPenalizaciones(conn);
                 break;
             default:
                 sop("opcion incorrecta");
@@ -798,6 +868,42 @@ public class Io{
             sop("Error al crear la tabla: " + e.getMessage());
         }
     }
+    public static void crearTablaPrestamos(Connection conn) {
+        try {
+            String sql = "CREATE TABLE prestamos (" +
+                         "cod_prest INT PRIMARY KEY, " +
+                         "fecha_prestamo DATE, " +
+                         "fecha_entrega DATE, " +
+                         "fecha_devolucion DATE, " +
+                         "cod_usuario INT, " +
+                         "FOREIGN KEY (cod_usuario) REFERENCES usuarios(cod_usuario))";
+            
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+            stmt.close();
+            sop("Tabla 'prestamos' creada correctamente.");
+        } catch (SQLException e) {
+            sop("Error al crear la tabla: " + e.getMessage());
+        }   
+    }
+    public static void crearTablaPenalizaciones(Connection conn) {
+        try {
+            String sql = "CREATE TABLE penalizaciones (" +
+                         "id INT PRIMARY KEY AUTO_INCREMENT, " +
+                         "cod_usuario INT, " +
+                         "motivo VARCHAR(255), " +
+                         "fecha_inicio DATE, " +
+                         "fecha_fin DATE, " +
+                         "FOREIGN KEY (cod_usuario) REFERENCES usuarios(cod_usuario))";
+            
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+            stmt.close();
+            sop("Tabla 'penalizaciones' creada correctamente.");
+        } catch (SQLException e) {
+            sop("Error al crear la tabla: " + e.getMessage());
+        }
+    }
 
 
 
@@ -878,6 +984,61 @@ public class Io{
             sop("Error al eliminar las tabla: " + e.getMessage());
         }
     }
+    public static void borrarTablaPrestamos(Connection conn) {
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+            stmt.executeUpdate("DROP TABLE IF EXISTS prestamos");
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+            stmt.close();
+            sop("Tabla 'prestamos' eliminada correctamente.");
+        } catch (SQLException e) {
+            sop("Error al eliminar la tabla 'prestamos': " + e.getMessage());
+        }
+    }
+    
+    public static void borrarTablaPenalizaciones(Connection conn) {
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+            stmt.executeUpdate("DROP TABLE IF EXISTS penalizaciones");
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+            stmt.close();
+            sop("Tabla 'penalizaciones' eliminada correctamente.");
+        } catch (SQLException e) {
+            sop("Error al eliminar la tabla 'penalizaciones': " + e.getMessage());
+        }
+    }
+
+    public static void mostrarCampos(Connection conn, Scanner scanner) {
+        
+        sop("De que tabla quieres ver los Campos? (u/ l/ a/ e/ pr/ pe)");
+        String opcion=scanner.nextLine();
+        switch (opcion) {
+            case "u":
+                mostrarCamposTablaUsuarios(conn);
+                break;
+            case "l":
+                mostrarCamposTablaLibros(conn);
+                break;
+            case "a":
+                mostrarCamposTablaAutores(conn);
+                break;
+            case "e":
+                mostrarCamposTablaEjemplares(conn);
+                break;
+            case "pr":
+                mostrarCamposTablaPrestamos(conn);
+                break;
+            case "pe":
+                mostrarCamposTablaPenalizaciones(conn);
+                break;
+            default:
+                sop("opcion incorrecta");
+                break;
+        }
+
+    }
     public static void mostrarCamposTablaUsuarios(Connection conn) {
         try {
             String sql = "SELECT * FROM usuarios LIMIT 1";
@@ -894,6 +1055,97 @@ public class Io{
             stmt.close();
         } catch (SQLException e) {
             sop("Error al obtener los campos de la tabla: " + e.getMessage());
+        }
+    }
+    public static void mostrarCamposTablaLibros(Connection conn) {
+        try {
+            String sql = "SELECT * FROM libros LIMIT 1";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+    
+            for (int i = 1; i <= columnCount; i++) {
+                sop(rsmd.getColumnName(i) + " (" + rsmd.getColumnTypeName(i) + ")");
+            }
+    
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            sop("Error al obtener los campos de la tabla 'libros': " + e.getMessage());
+        }
+    }
+    
+    public static void mostrarCamposTablaAutores(Connection conn) {
+        try {
+            String sql = "SELECT * FROM autores LIMIT 1";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+    
+            for (int i = 1; i <= columnCount; i++) {
+                sop(rsmd.getColumnName(i) + " (" + rsmd.getColumnTypeName(i) + ")");
+            }
+    
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            sop("Error al obtener los campos de la tabla 'autores': " + e.getMessage());
+        }
+    }
+    public static void mostrarCamposTablaEjemplares(Connection conn) {
+        try {
+            String sql = "SELECT * FROM ejemplares LIMIT 1";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+    
+            for (int i = 1; i <= columnCount; i++) {
+                sop(rsmd.getColumnName(i) + " (" + rsmd.getColumnTypeName(i) + ")");
+            }
+    
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            sop("Error al obtener los campos de la tabla 'ejemplares': " + e.getMessage());
+        }
+    }
+    public static void mostrarCamposTablaPrestamos(Connection conn) {
+        try {
+            String sql = "SELECT * FROM prestamos LIMIT 1";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+    
+            for (int i = 1; i <= columnCount; i++) {
+                sop(rsmd.getColumnName(i) + " (" + rsmd.getColumnTypeName(i) + ")");
+            }
+    
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            sop("Error al obtener los campos de la tabla 'prestamos': " + e.getMessage());
+        }
+    }
+    public static void mostrarCamposTablaPenalizaciones(Connection conn) {
+        try {
+            String sql = "SELECT * FROM penalizaciones LIMIT 1";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+    
+            for (int i = 1; i <= columnCount; i++) {
+                sop(rsmd.getColumnName(i) + " (" + rsmd.getColumnTypeName(i) + ")");
+            }
+    
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            sop("Error al obtener los campos de la tabla 'penalizaciones': " + e.getMessage());
         }
     }
     public static void continuar(Scanner scanner) {
