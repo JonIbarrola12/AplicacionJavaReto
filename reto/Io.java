@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -42,22 +44,32 @@ public class Io{
             sop("error al cerrar la conexion");
         }
     }
-    public static void setConsoleSize(int cols, int rows) {
+    public static void aumentarFuenteCmd(int tamanioFuente) {
         try {
-            // Limitar valores mínimos
-            cols = Math.max(cols, 20);
-            rows = Math.max(rows, 10);
-    
-            String command = "cmd /c mode con: cols=" + cols + " lines=" + rows;
-            Process process = Runtime.getRuntime().exec(command);
-            int exitCode = process.waitFor(); // Espera a que termine
-            
-            if (exitCode != 0) {
-                System.out.println("Error: No se pudo cambiar el tamaño (Código " + exitCode + ")");
-            }
-        } catch (IOException | InterruptedException e) {
-            System.out.println("Error al cambiar el tamaño: " + e.getMessage());
+            // Cambiar tamaño de la fuente (requiere acceso a configuración del registro o herramientas externas)
+            String fontCommand = "reg add HKCU\\Console /v FontSize /t REG_DWORD /d "+ (tamanioFuente * 65536) + " /f";
+            Runtime.getRuntime().exec(new String[]{"cmd", "/c", fontCommand});
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+   public static int getTamanioFuenteCmd() {
+	   //import java.io.InputStreamReader;
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{"cmd", "/c", "reg query HKCU\\Console /v FontSize"});
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("FontSize")) {
+                   // String[] parts = line.trim().split("\s+");
+                   int fontSize=10;//  = Integer.parseInt(parts[parts.length - 1], 16) / 65536;
+                    return fontSize;
+                }
+            }
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return -1; // Valor por defecto si falla
     }
     public static void buscarPorCodUsuario(Connection conn, Scanner scanner) {
         System.out.print("Introduce el codigo del usuario:");

@@ -3,9 +3,9 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Aplicacion{
-    static int cols = 100;
-    static int rows = 30;
+    
     public static void main(String[] args) {
+        char opc;
         Scanner scanner = new Scanner(System.in);
         int opcion;
         String fechaActual= Io.fechaActual();
@@ -98,20 +98,18 @@ public class Aplicacion{
                     
                 case 11:
                 // Aumentar tamaño
-                     Aplicacion.cols += 20;
-                     Aplicacion.rows += 10;
-                    Io.setConsoleSize(Aplicacion.cols, Aplicacion.rows);
-                    Io.sop("Tamaño aumentado a " + Aplicacion.cols + "x" + Aplicacion.rows);
-                    Io.continuar(scanner);
-                 break;
+                Io.aumentarFuenteCmd(16);
+                Io.Sop("Se va a cerrar el programa para que los cambios");
+                Io.Sop("tengan efecto");
+                opc='0';
+                break;
                 case 12:
                     // Disminuir tamaño
-                    Aplicacion.cols -= 20;
-                    Aplicacion.rows -= 10;
-                    Io.setConsoleSize(Aplicacion.cols, Aplicacion.rows);
-                    Io.sop("Tamaño reducido a " + Aplicacion.cols + "x" + Aplicacion.rows);
-                    Io.continuar(scanner);
-                    break;
+                    Io.aumentarFuenteCmd(28);
+		Io.Sop("Se va a cerrar el programa para que los cambios");
+		Io.Sop("tengan efecto");
+		opc='0';
+		break;
                 case 13:
                     Io.mostrarCamposTablaUsuarios(conn);
                     Io.continuar(scanner);
