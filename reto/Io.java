@@ -1417,7 +1417,395 @@ public class Io{
             sop("Error al mostrar usuarios paginados: " + e.getMessage());
         }
     }
-
+    public static void mostrarLibrosPaginados(Connection conn, Scanner scanner) {
+        int pagina = 0;
+        int tamanioPagina = 10;
+        int totalLibros = 0;
+    
+        try {
+            String conteo = "SELECT COUNT(*) FROM libros";
+            PreparedStatement stmtConteo = conn.prepareStatement(conteo);
+            ResultSet rsConteo = stmtConteo.executeQuery();
+    
+            if (rsConteo.next()) {
+                totalLibros = rsConteo.getInt(1);
+            }
+    
+            rsConteo.close();
+            stmtConteo.close();
+    
+            if (totalLibros == 0) {
+                sop("No hay libros en la base de datos");
+                return;
+            }
+    
+            char opcion = ' ';
+            int totalPaginas = (totalLibros + tamanioPagina - 1) / tamanioPagina;
+    
+            do {
+                Io.clearScreen();
+                sop("Mostrando libros - Página " + (pagina + 1) + " de " + totalPaginas + "\n");
+    
+                String sql = "SELECT ISBN, TITULO, PAGINAS, URLIMG FROM libros LIMIT ? OFFSET ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, tamanioPagina);
+                stmt.setInt(2, pagina * tamanioPagina);
+                ResultSet rs = stmt.executeQuery();
+    
+                System.out.printf("%-20s%-40s%-10s%-50s\n", "ISBN", "TITULO", "PAGINAS", "URLIMG");
+                System.out.println("----------------------------------------------------------------------------------------------------------");
+    
+                while (rs.next()) {
+                    System.out.printf("%-20s%-40s%-10d%-50s\n",
+                        rs.getString("ISBN"),
+                        rs.getString("TITULO"),
+                        rs.getInt("PAGINAS"),
+                        rs.getString("URLIMG")
+                    );
+                }
+    
+                rs.close();
+                stmt.close();
+    
+                sop("\nNavegar: '+' siguiente, '-' anterior, 'q' salir.");
+                String input = scanner.nextLine();
+                if (!input.isEmpty()) {
+                    opcion = input.charAt(0);
+    
+                    switch (opcion) {
+                        case '+':
+                            pagina = (pagina + 1) % totalPaginas;
+                            break;
+                        case '-':
+                            pagina = (pagina - 1 + totalPaginas) % totalPaginas;
+                            break;
+                        case 'q':
+                            break;
+                        default:
+                            sop("Opción inválida. Usa '+' para avanzar, '-' para retroceder o 'q' para salir.");
+                            sop("Presiona Enter para continuar...");
+                            scanner.nextLine();
+                            break;
+                    }
+                }
+    
+            } while (opcion != 'q');
+    
+        } catch (SQLException e) {
+            sop("Error al mostrar libros paginados: " + e.getMessage());
+        }
+    }
+    public static void mostrarAutoresPaginados(Connection conn, Scanner scanner) {
+        int pagina = 0;
+        int tamanioPagina = 10;
+        int totalAutores = 0;
+    
+        try {
+            String conteo = "SELECT COUNT(*) FROM autores";
+            PreparedStatement stmtConteo = conn.prepareStatement(conteo);
+            ResultSet rsConteo = stmtConteo.executeQuery();
+    
+            if (rsConteo.next()) {
+                totalAutores = rsConteo.getInt(1);
+            }
+    
+            rsConteo.close();
+            stmtConteo.close();
+    
+            if (totalAutores == 0) {
+                sop("No hay autores en la base de datos");
+                return;
+            }
+    
+            char opcion = ' ';
+            int totalPaginas = (totalAutores + tamanioPagina - 1) / tamanioPagina;
+    
+            do {
+                Io.clearScreen();
+                sop("Mostrando autores - Página " + (pagina + 1) + " de " + totalPaginas + "\n");
+    
+                String sql = "SELECT DNI, NOMBRE, APE1, APE2 FROM autores LIMIT ? OFFSET ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, tamanioPagina);
+                stmt.setInt(2, pagina * tamanioPagina);
+                ResultSet rs = stmt.executeQuery();
+    
+                System.out.printf("%-15s%-20s%-20s%-20s\n", "DNI", "NOMBRE", "APE1", "APE2");
+                System.out.println("----------------------------------------------------------------------------------------------------------");
+    
+                while (rs.next()) {
+                System.out.printf("%-15s%-20s%-20s%-20s\n",
+                    rs.getString("DNI"),
+                    rs.getString("NOMBRE"),
+                    rs.getString("APE1"),
+                    rs.getString("APE2")
+                    );
+                }
+    
+                rs.close();
+                stmt.close();
+    
+                sop("\nNavegar: '+' siguiente, '-' anterior, 'q' salir.");
+                String input = scanner.nextLine();
+                if (!input.isEmpty()) {
+                    opcion = input.charAt(0);
+    
+                    switch (opcion) {
+                        case '+':
+                            pagina = (pagina + 1) % totalPaginas;
+                            break;
+                        case '-':
+                            pagina = (pagina - 1 + totalPaginas) % totalPaginas;
+                            break;
+                        case 'q':
+                            break;
+                        default:
+                            sop("Opción inválida. Usa '+' para avanzar, '-' para retroceder o 'q' para salir.");
+                            sop("Presiona Enter para continuar...");
+                            scanner.nextLine();
+                            break;
+                    }
+                }
+    
+            } while (opcion != 'q');
+    
+        } catch (SQLException e) {
+            sop("Error al mostrar autores paginados: " + e.getMessage());
+        }
+    }
+    public static void mostrarPenalizacionesPaginadas(Connection conn, Scanner scanner) {
+        int pagina = 0;
+        int tamanioPagina = 10;
+        int totalPenalizaciones = 0;
+    
+        try {
+            String conteo = "SELECT COUNT(*) FROM penalizaciones";
+            PreparedStatement stmtConteo = conn.prepareStatement(conteo);
+            ResultSet rsConteo = stmtConteo.executeQuery();
+    
+            if (rsConteo.next()) {
+                totalPenalizaciones = rsConteo.getInt(1);
+            }
+    
+            rsConteo.close();
+            stmtConteo.close();
+    
+            if (totalPenalizaciones == 0) {
+                sop("No hay penalizaciones en la base de datos");
+                return;
+            }
+    
+            char opcion = ' ';
+            int totalPaginas = (totalPenalizaciones + tamanioPagina - 1) / tamanioPagina;
+    
+            do {
+                Io.clearScreen();
+                sop("Mostrando penalizaciones - Página " + (pagina + 1) + " de " + totalPaginas + "\n");
+    
+                String sql = "SELECT ID, COD_USUARIO, MOTIVO, FECHA_INICIO, FECHA_FIN FROM penalizaciones LIMIT ? OFFSET ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, tamanioPagina);
+                stmt.setInt(2, pagina * tamanioPagina);
+                ResultSet rs = stmt.executeQuery();
+    
+                System.out.printf("%-5s%-15s%-30s%-15s%-15s\n", "ID", "COD_USUARIO", "MOTIVO", "FECHA_INICIO", "FECHA_FIN");
+                System.out.println("----------------------------------------------------------------------------------------------------------");
+    
+                while (rs.next()) {
+                System.out.printf("%-5d%-15s%-30s%-15s%-15s\n",
+                    rs.getInt("ID"),
+                    rs.getString("COD_USUARIO"),
+                    rs.getString("MOTIVO"),
+                    rs.getDate("FECHA_INICIO"),
+                    rs.getDate("FECHA_FIN")
+                    );
+                }
+    
+                rs.close();
+                stmt.close();
+    
+                sop("\nNavegar: '+' siguiente, '-' anterior, 'q' salir.");
+                String input = scanner.nextLine();
+                if (!input.isEmpty()) {
+                    opcion = input.charAt(0);
+    
+                    switch (opcion) {
+                        case '+':
+                            pagina = (pagina + 1) % totalPaginas;
+                            break;
+                        case '-':
+                            pagina = (pagina - 1 + totalPaginas) % totalPaginas;
+                            break;
+                        case 'q':
+                            break;
+                        default:
+                            sop("Opción inválida. Usa '+' para avanzar, '-' para retroceder o 'q' para salir.");
+                            sop("Presiona Enter para continuar...");
+                            scanner.nextLine();
+                            break;
+                    }
+                }
+    
+            } while (opcion != 'q');
+    
+        } catch (SQLException e) {
+            sop("Error al mostrar penzalizaciones paginadas: " + e.getMessage());
+        }
+    }
+    public static void mostrarReservasPaginadas(Connection conn, Scanner scanner) {
+        int pagina = 0;
+        int tamanioPagina = 10;
+        int totalReservas = 0;
+    
+        try {
+            String conteo = "SELECT COUNT(*) FROM reservas";
+            PreparedStatement stmtConteo = conn.prepareStatement(conteo);
+            ResultSet rsConteo = stmtConteo.executeQuery();
+    
+            if (rsConteo.next()) {
+                totalReservas = rsConteo.getInt(1);
+            }
+    
+            rsConteo.close();
+            stmtConteo.close();
+    
+            if (totalReservas == 0) {
+                sop("No hay reservas en la base de datos");
+                return;
+            }
+    
+            char opcion = ' ';
+            int totalPaginas = (totalReservas + tamanioPagina - 1) / tamanioPagina;
+    
+            do {
+                Io.clearScreen();
+                sop("Mostrando reservas - Página " + (pagina + 1) + " de " + totalPaginas + "\n");
+    
+                String sql = "SELECT ID, COD_USUARIO, ISBN, FECHA_RESERVA FROM reservas LIMIT ? OFFSET ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, tamanioPagina);
+                stmt.setInt(2, pagina * tamanioPagina);
+                ResultSet rs = stmt.executeQuery();
+    
+                System.out.printf("%-5s%-15s%-20s%-15s\n", "ID", "COD_USUARIO", "ISBN", "FECHA_RESERVA");
+                System.out.println("----------------------------------------------------------------------------------------------------------");
+    
+                while (rs.next()) {
+                System.out.printf("%-5d%-15s%-20s%-15s\n",
+                    rs.getInt("ID"),
+                    rs.getString("COD_USUARIO"),
+                    rs.getString("ISBN"),
+                    rs.getDate("FECHA_RESERVA")
+                    );
+                }
+    
+                rs.close();
+                stmt.close();
+    
+                sop("\nNavegar: '+' siguiente, '-' anterior, 'q' salir.");
+                String input = scanner.nextLine();
+                if (!input.isEmpty()) {
+                    opcion = input.charAt(0);
+    
+                    switch (opcion) {
+                        case '+':
+                            pagina = (pagina + 1) % totalPaginas;
+                            break;
+                        case '-':
+                            pagina = (pagina - 1 + totalPaginas) % totalPaginas;
+                            break;
+                        case 'q':
+                            break;
+                        default:
+                            sop("Opción inválida. Usa '+' para avanzar, '-' para retroceder o 'q' para salir.");
+                            sop("Presiona Enter para continuar...");
+                            scanner.nextLine();
+                            break;
+                    }
+                }
+    
+            } while (opcion != 'q');
+    
+        } catch (SQLException e) {
+            sop("Error al mostrar reservas paginadas: " + e.getMessage());
+        }
+    }
+    public static void mostrarLibrosAutoresPaginados(Connection conn, Scanner scanner) {
+        int pagina = 0;
+        int tamanioPagina = 10;
+        int totalRegistros = 0;
+    
+        try {
+            String conteo = "SELECT COUNT(*) FROM libros_autores";
+            PreparedStatement stmtConteo = conn.prepareStatement(conteo);
+            ResultSet rsConteo = stmtConteo.executeQuery();
+    
+            if (rsConteo.next()) {
+                totalRegistros = rsConteo.getInt(1);
+            }
+    
+            rsConteo.close();
+            stmtConteo.close();
+    
+            if (totalRegistros == 0) {
+                sop("No hay relaciones libro-autor en la base de datos");
+                return;
+            }
+    
+            char opcion = ' ';
+            int totalPaginas = (totalRegistros + tamanioPagina - 1) / tamanioPagina;
+    
+            do {
+                Io.clearScreen();
+                sop("Mostrando relaciones libro-autor - Página " + (pagina + 1) + " de " + totalPaginas + "\n");
+    
+                String sql = "SELECT ISBN, DNI FROM libros_autores LIMIT ? OFFSET ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, tamanioPagina);
+                stmt.setInt(2, pagina * tamanioPagina);
+                ResultSet rs = stmt.executeQuery();
+    
+                System.out.printf("%-20s%-20s\n", "ISBN", "DNI");
+                System.out.println("----------------------------------------------------------------------------------------------------------");
+    
+                while (rs.next()) {
+                System.out.printf("%-20s%-20s\n",
+                    rs.getString("ISBN"),
+                    rs.getString("DNI")
+                    );
+                }
+    
+                rs.close();
+                stmt.close();
+    
+                sop("\nNavegar: '+' siguiente, '-' anterior, 'q' salir.");
+                String input = scanner.nextLine();
+                if (!input.isEmpty()) {
+                    opcion = input.charAt(0);
+    
+                    switch (opcion) {
+                        case '+':
+                            pagina = (pagina + 1) % totalPaginas;
+                            break;
+                        case '-':
+                            pagina = (pagina - 1 + totalPaginas) % totalPaginas;
+                            break;
+                        case 'q':
+                            break;
+                        default:
+                            sop("Opción inválida. Usa '+' para avanzar, '-' para retroceder o 'q' para salir.");
+                            sop("Presiona Enter para continuar...");
+                            scanner.nextLine();
+                            break;
+                    }
+                }
+    
+            } while (opcion != 'q');
+    
+        } catch (SQLException e) {
+            sop("Error al mostrar relaciones libro-autor: " + e.getMessage());
+        }
+    }
 }
 
 
