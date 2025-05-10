@@ -42,7 +42,7 @@ public class Aplicacion{
                     break;
                 case 2:
                     try {
-                        Io.generarUsuario(conn, scanner);
+                        Io.anadirUsuario(conn, scanner);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }

@@ -498,13 +498,51 @@ public class Io{
         rs.close();
         stmt.close();
     }
-    public static void generarUsuario(Connection conn, Scanner scanner) throws SQLException {
+    public static void anadirRegistro (Connection conn, Scanner scanner) {
+        sop("Que tabla quieres añadir? (u/ l/ a/ e)");
+        String opcion=scanner.nextLine();
+        switch (opcion) {
+            case "u":
+                try {
+                    anadirUsuario(conn, scanner);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "l":
+                try {
+                    anadirLibro(conn, scanner);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "a":
+                try {
+                    anadirAutor(conn, scanner);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "e":
+                try {
+                    anadirEjemplar(conn, scanner);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+            default:
+                sop("opcion incorrecta");
+                break;
+        }
+
+    }
+    public static void anadirUsuario(Connection conn, Scanner scanner) throws SQLException {
         sop("Quieres generar un usuario automaticamente o manualmente? (a/m)");
         String opcion = scanner.nextLine();
         if (opcion.equalsIgnoreCase("a")) {
             generarUsuarioAutomaticamente(conn);
         } else if (opcion.equalsIgnoreCase("m")) {
-            generarUsuarioManual(conn, scanner);
+            anadirUsuarioManual(conn, scanner);
         } else {
             sop("Opcion no valida.");
         }
@@ -554,7 +592,7 @@ public class Io{
         }
         sop(nombre + " se ha generado correctamente.");
     }
-    public static void generarUsuarioManual(Connection conn, Scanner scanner) throws SQLException {
+    public static void anadirUsuarioManual(Connection conn, Scanner scanner) throws SQLException {
         String direccion="", numSS=""; 
         sop("Quieres generar un usario o un trabajador? (u/t)");
         String opcion = scanner.nextLine();
@@ -595,6 +633,77 @@ public class Io{
             stmt.setNull(7, java.sql.Types.VARCHAR);
             stmt.executeUpdate();
             sop("Usuario " + nombre + " generado correctamente.");
+        }
+    }
+    public static void anadirLibro(Connection conn, Scanner scanner) throws SQLException {
+        String isbn = generarISBN(conn, scanner);
+        
+        String titulo = generarTitulo(scanner);
+        
+        int paginas = generarPaginas(scanner);
+
+        String urlImg = null;
+        sop("Quieres introducir una URL de la imagen? (s/n)");
+        String respuesta = scanner.nextLine();
+        if(respuesta.equalsIgnoreCase("s")) { 
+            urlImg = generarUrlImg(scanner);
+        }
+        String sql = "INSERT INTO libros (isbn, titulo,nº_copias_existentes, paginas, url_img) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, isbn);
+            stmt.setString(2, titulo);
+            stmt.setNull(3, java.sql.Types.VARCHAR);    
+            stmt.setInt(4, paginas);
+            if (respuesta.equalsIgnoreCase("s")) {
+                stmt.setString(5, urlImg);
+            }
+            stmt.setNull(5, java.sql.Types.VARCHAR);
+            stmt.executeUpdate();
+            sop("Libro " + titulo + " generado correctamente.");
+        }
+        String autor = generarNombreAutor(scanner);
+        String apellido = generarApellidoAutor(scanner);
+        String dni = getDNIByNombreAndApellido(conn, scanner, autor, apellido);
+        while (dni == null){
+            sop("No se ha encontrado el autor, ¿Lo escribiste mal? (s/n):");
+            respuesta = scanner.nextLine();
+            if (respuesta.equalsIgnoreCase("s")) {
+                autor = generarNombreAutor(scanner);
+                apellido = generarApellidoAutor(scanner);
+                dni = getDNIByNombreAndApellido(conn, scanner, autor, apellido);
+            }
+        }
+        sop("Introduce el dni del autor del libro:");
+        dni = generarDNIAutor(conn, scanner);
+        sop("Quieres introducir el segundo apellido del autor? (s/n)");
+        respuesta = scanner.nextLine();
+        if (respuesta.equalsIgnoreCase("s")) {
+            String apellido2 = generarApellidoAutor(scanner);
+        }
+         
+        
+    }
+    public static void anadirAutor(Connection conn, Scanner scanner) throws SQLException {
+        String dni = generarDNIAutor(conn, scanner);
+        String nombre = generarNombreAutor(scanner);
+        String apellido1 = generarApellidoAutor(scanner);
+        String apellido2 = null;
+        sop("Quieres introducir el segundo apellido del autor? (s/n)");
+        String respuesta = scanner.nextLine();
+        if(respuesta.equalsIgnoreCase("s")) { 
+            apellido2 = generarApellidoAutor(scanner);
+        }
+        String sql = "INSERT INTO autores (dni, nombre, ape1, ape2) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, dni);
+            stmt.setString(2, nombre);
+            stmt.setString(3, apellido1);
+            if (respuesta.equalsIgnoreCase("s")) {
+                stmt.setString(4, apellido2);
+            }
+            stmt.setNull(4, java.sql.Types.VARCHAR);
+            stmt.executeUpdate();
+            sop("Autor " + nombre + " generado correctamente.");
         }
     }
     public static int generarCodigoManual(Connection conn, Scanner scanner) throws SQLException {
@@ -665,6 +774,50 @@ public class Io{
             sop("Penalizacion registrada correctamente.");
         }
     }
+    public static String generarISBN(Connection conn, Scanner scanner) throws SQLException {
+        sop("Introduce el ISBN del libro:");
+        String isbn = scanner.nextLine();
+        while (comprobarISBN(conn, isbn)) {
+            sop("El ISBN ya existe. Introduce un ISBN valido:");
+            isbn = scanner.nextLine();
+        }
+        return isbn;
+    }
+    public static String generarTitulo(Scanner scanner) throws SQLException {
+        sop("Introduce el titulo del libro:");
+        String titulo = scanner.nextLine();
+        return titulo;
+    }
+    public static int generarPaginas(Scanner scanner) {
+        sop("Introduce el numero de paginas del libro:");
+        int paginas = scanner.nextInt();
+        scanner.nextLine(); 
+        return paginas;
+    }
+    public static String generarUrlImg(Scanner scanner) {
+        sop("Introduce la URL de la imagen del libro:");
+        String urlImg = scanner.nextLine();
+        return urlImg;
+    }
+    public static String generarDNIAutor(Connection conn, Scanner scanner) throws SQLException {
+        sop("Introduce el DNI del autor:");
+        String dni = scanner.nextLine();
+        while (comprobarDNI(conn, dni)) {
+            sop("El DNI ya existe. Introduce otro DNI:");
+            dni = scanner.nextLine();
+        }
+        return dni;
+    }
+    public static String generarNombreAutor(Scanner scanner) {
+        sop("Introduce el nombre del autor:");
+        String nombre = scanner.nextLine();
+        return nombre;
+    }
+    public static String generarApellidoAutor(Scanner scanner) {
+        sop("Introduce el apellido del autor:");
+        String apellido = scanner.nextLine();
+        return apellido;
+    }
     public static void eliminarUsuario(Connection conn, Scanner scanner) throws SQLException {
         mostrarUsuarios(conn);
         sop("Introduce el codigo del usuario a eliminar:");
@@ -731,6 +884,22 @@ public class Io{
             stmt.setString(1, correo);
             ResultSet rs = stmt.executeQuery();
             return rs.next();
+        }
+    }
+    public static boolean comprobarISBN(Connection conn, String isbn) throws SQLException {
+        String sql = "SELECT * FROM libros WHERE isbn = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, isbn);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        }
+    }
+    public static boolean comprobarDNI(Connection conn, String dni) throws SQLException {
+        String sql = "SELECT * FROM autores WHERE dni = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, dni);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
         }
     }
     public static void crearTablas(Connection conn, Scanner scanner) {
@@ -905,37 +1074,6 @@ public class Io{
         }
     }
 
-
-
-    public static void crearCienUsuarios(Connection conn) {
-        try {
-            String sql = "INSERT INTO usuarios (cod_usuario, nombre_usuario, contrasena, telefono, direccion, correo_elec, num_ss) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-
-            for (int i = 0; i < 100; i++) {
-                int codigo = (int) (Math.random()*1000);
-                while (comprobarCodigo(conn, codigo)) {
-                    codigo = (int) (Math.random()*1000)+1;
-                }
-                
-                stmt.setInt(1, codigo);
-                stmt.setString(2, "Usuario" + codigo);
-                stmt.setString(3, "BibliotecaMuskiz" + codigo);
-                stmt.setNull(4, java.sql.Types.VARCHAR);
-                stmt.setString(5, "");
-                stmt.setString(6, "usuario" + codigo + "@bibliotecamuskiz.eus");
-                stmt.setNull(7, java.sql.Types.VARCHAR);
-                stmt.executeUpdate();
-
-
-            }
-           
-            stmt.close();
-            sop("100 usuarios creados.");
-        } catch (SQLException e) {
-            sop("Error al crear los usuarios: " + e.getMessage());
-        }
-    }
     public static void borrarTablaUsuarios(Connection conn) {
         try {
             Statement stmt = conn.createStatement();
@@ -1201,6 +1339,24 @@ public class Io{
             sop("Error al buscar el usuario: " + e.getMessage());
         }
         return codUsuario;
+    }
+    public static String getDNIByNombreAndApellido(Connection conn, Scanner scanner, String nombre, String apellido) throws SQLException {
+        String sql = "SELECT dni FROM autores WHERE nombre = ? AND ape1 = ?";
+        String dni = null;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nombre);
+            stmt.setString(2, apellido);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                dni = rs.getString("dni");
+                return dni;
+            } else {
+                sop("No se encontro ningun autor con ese nombre y apellido.");
+            }
+        } catch (SQLException e) {
+            sop("Error al buscar el autor: " + e.getMessage());
+        }
+        return dni;
     }
     public static boolean comprobarDisponibilidad(Connection conn, int codEjemplar) throws SQLException {
         String sql = "SELECT * FROM ejemplares WHERE cod_ejem = ? AND estado = 'disponible'";
