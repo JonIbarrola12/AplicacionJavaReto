@@ -668,16 +668,15 @@ public class Io{
         String apellido = generarApellidoAutor(scanner);
         String dni = getDNIByNombreAndApellido(conn, scanner, autor, apellido);
         while (dni == null){
-            sop("No se ha encontrado el autor, ¿Lo escribiste mal? (s/n):");
+            sop("No se ha encontrado el autor, ¿Qieres crear uno nuevo o volver a intentarlo? (crear/repetir):");
             respuesta = scanner.nextLine();
-            if (respuesta.equalsIgnoreCase("s")) {
+            if (respuesta.equalsIgnoreCase("repetir")) {
                 autor = generarNombreAutor(scanner);
                 apellido = generarApellidoAutor(scanner);
                 dni = getDNIByNombreAndApellido(conn, scanner, autor, apellido);
-            }else {
-                sop ("Creacionde un nuevo autor:");
-                autor = generarNombreAutor(scanner);
+            }else if (respuesta.equalsIgnoreCase("crear")) {
                 dni = generarDNIAutor(conn, scanner);
+                autor = generarNombreAutor(scanner);
                 apellido = generarApellidoAutor(scanner);
                 String apellido2 = null;
                 sop("Quieres introducir el segundo apellido del autor? (s/n)");
@@ -686,6 +685,8 @@ public class Io{
                     apellido2 = generarApellidoAutor(scanner);
                 }
                 insertarAutor(conn, scanner, dni, autor, apellido, apellido2);
+            }else{
+                sop("Opcion no valida.");
             }
         }
         int numEjemplares = generarNumEjemplares(scanner);
