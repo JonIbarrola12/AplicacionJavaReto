@@ -498,7 +498,7 @@ public class Io{
         rs.close();
         stmt.close();
     }
-    public static void anadirRegistro (Connection conn, Scanner scanner) {
+    public static void anadirRegistro (Connection conn, Scanner scanner) throws SQLException {
         sop("Que tabla quieres añadir? (u/ l/ a/ e)");
         String opcion=scanner.nextLine();
         switch (opcion) {
@@ -554,7 +554,7 @@ public class Io{
         String telefono = Azar.getTelefono();
         String numSS = Azar.getNumSS();
         //Comprobamos el codigo para que no se repita ya que es la clave primaria de la tabla usuarios
-        while (comprobarCodigo(conn, codUsuario)) {
+        while (comprobarCodigoUsuario(conn, codUsuario)) {
             codUsuario = (int) (Math.random()*100)+1;
         }
         //Comprobamos el nombre para que no se repita ya que es unn campo unique de la tabla usuarios
@@ -624,13 +624,15 @@ public class Io{
             stmt.setString(4, telefono);
             if (respuesta.equalsIgnoreCase("s")) {
                 stmt.setString(5, direccion);
+            }else{
+                stmt.setNull(5, java.sql.Types.VARCHAR);
             }
-            stmt.setNull(5, java.sql.Types.VARCHAR);
             stmt.setString(6, correo);
             if (opcion.equalsIgnoreCase("t")) {
                 stmt.setString(7, numSS);
+            }else{
+                stmt.setNull(7, java.sql.Types.VARCHAR);
             }
-            stmt.setNull(7, java.sql.Types.VARCHAR);
             stmt.executeUpdate();
             sop("Usuario " + nombre + " generado correctamente.");
         }
@@ -648,7 +650,7 @@ public class Io{
         if(respuesta.equalsIgnoreCase("s")) { 
             urlImg = generarUrlImg(scanner);
         }
-        String sql = "INSERT INTO libros (isbn, titulo,nº_copias_existentes, paginas, url_img) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO libros (isbn, titulo,nº_copias_existentes, paginas, urlimg) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, isbn);
             stmt.setString(2, titulo);
@@ -656,8 +658,9 @@ public class Io{
             stmt.setInt(4, paginas);
             if (respuesta.equalsIgnoreCase("s")) {
                 stmt.setString(5, urlImg);
+            }else{
+                stmt.setNull(5, java.sql.Types.VARCHAR);
             }
-            stmt.setNull(5, java.sql.Types.VARCHAR);
             stmt.executeUpdate();
             sop("Libro " + titulo + " generado correctamente.");
         }
@@ -671,46 +674,81 @@ public class Io{
                 autor = generarNombreAutor(scanner);
                 apellido = generarApellidoAutor(scanner);
                 dni = getDNIByNombreAndApellido(conn, scanner, autor, apellido);
+            }else {
+                sop ("Creacionde un nuevo autor:");
+                autor = generarNombreAutor(scanner);
+                dni = generarDNIAutor(conn, scanner);
+                apellido = generarApellidoAutor(scanner);
+                String apellido2 = null;
+                sop("Quieres introducir el segundo apellido del autor? (s/n)");
+                respuesta = scanner.nextLine();
+                if (respuesta.equalsIgnoreCase("s")) {
+                    apellido2 = generarApellidoAutor(scanner);
+                }
+                insertarAutor(conn, scanner, dni, autor, apellido, apellido2);
             }
         }
-        sop("Introduce el dni del autor del libro:");
-        dni = generarDNIAutor(conn, scanner);
-        sop("Quieres introducir el segundo apellido del autor? (s/n)");
-        respuesta = scanner.nextLine();
-        if (respuesta.equalsIgnoreCase("s")) {
-            String apellido2 = generarApellidoAutor(scanner);
+        int numEjemplares = generarNumEjemplares(scanner);
+        actualizarLibro(conn, isbn, numEjemplares);
+
+        for (int i = 0; i < numEjemplares; i++) {
+            insertarEjemplar(conn, scanner, isbn);
         }
-         
-        
     }
     public static void anadirAutor(Connection conn, Scanner scanner) throws SQLException {
         String dni = generarDNIAutor(conn, scanner);
         String nombre = generarNombreAutor(scanner);
-        String apellido1 = generarApellidoAutor(scanner);
-        String apellido2 = null;
+        String apellido = generarApellidoAutor(scanner);
         sop("Quieres introducir el segundo apellido del autor? (s/n)");
         String respuesta = scanner.nextLine();
-        if(respuesta.equalsIgnoreCase("s")) { 
+        String apellido2 = null;
+        if (respuesta.equalsIgnoreCase("s")) {
             apellido2 = generarApellidoAutor(scanner);
         }
+        insertarAutor(conn, scanner, dni, nombre, apellido, apellido2);
+    }
+    public static void anadirEjemplar(Connection conn, Scanner scanner) throws SQLException {
+        String isbn = generarISBN(conn, scanner);
+        insertarEjemplar(conn, scanner, isbn);
+    }
+    public static void insertarAutor(Connection conn, Scanner scanner, String dni, String nombre , String apellido , String apellido2) throws SQLException {
         String sql = "INSERT INTO autores (dni, nombre, ape1, ape2) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, dni);
             stmt.setString(2, nombre);
-            stmt.setString(3, apellido1);
-            if (respuesta.equalsIgnoreCase("s")) {
+            stmt.setString(3, apellido);
+            if (apellido2==null) {
+                stmt.setNull(4, java.sql.Types.VARCHAR);
+            }else{
                 stmt.setString(4, apellido2);
             }
-            stmt.setNull(4, java.sql.Types.VARCHAR);
             stmt.executeUpdate();
             sop("Autor " + nombre + " generado correctamente.");
+        }
+    }
+    public static void insertarEjemplar(Connection conn, Scanner scanner, String isbn) throws SQLException {
+        String sql = "INSERT INTO ejemplares (cod_ejem, idioma, estado, isbn, cod_prest) VALUES (?, ?, ?, ?, ?)";
+        int codEjem = (int) (Math.random()*1000)+1;
+        if (comprobarCodigoEjemplar(conn, codEjem)) {
+            codEjem = (int) (Math.random()*1000)+1;
+        }
+        String idioma = Azar.getIdioma();
+        String estado = "disponible";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codEjem);
+            stmt.setString(2, idioma);
+            stmt.setString(3, estado);
+            stmt.setString(4, isbn);
+            stmt.setNull(5, java.sql.Types.VARCHAR);
+            stmt.executeUpdate();
+            sop("Ejemplar generado correctamente.");
         }
     }
     public static int generarCodigoManual(Connection conn, Scanner scanner) throws SQLException {
         sop("Introduce el codigo del usuario:");
         int codUsuario = scanner.nextInt();
         scanner.nextLine(); 
-        while (comprobarCodigo(conn, codUsuario)) {
+        while (comprobarCodigoUsuario(conn, codUsuario)) {
             sop("El codigo ya existe. Introduce otro codigo:");
             codUsuario = scanner.nextInt();
             scanner.nextLine();
@@ -818,6 +856,17 @@ public class Io{
         String apellido = scanner.nextLine();
         return apellido;
     }
+    public static int generarNumEjemplares(Scanner scanner) {
+        sop("Cuantos ejemplares quieres añadir?");
+        int numEjemplares = scanner.nextInt();
+        scanner.nextLine(); 
+        while (numEjemplares <= 0) {
+            sop("El numero de ejemplares debe ser mayor que 0. Introduce otro numero:");
+            numEjemplares = scanner.nextInt();
+            scanner.nextLine();
+        }
+        return numEjemplares;
+    }
     public static void eliminarUsuario(Connection conn, Scanner scanner) throws SQLException {
         mostrarUsuarios(conn);
         sop("Introduce el codigo del usuario a eliminar:");
@@ -846,8 +895,24 @@ public class Io{
             }
         }
     }
-    public static boolean comprobarCodigo(Connection conn, int codigo) throws SQLException {
+    public static boolean comprobarCodigoUsuario(Connection conn, int codigo) throws SQLException {
         String sql = "SELECT * FROM usuarios WHERE cod_usuario = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codigo);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        }
+    }
+    public static boolean comprobarCodigoPrestamo(Connection conn, int codigo) throws SQLException {
+        String sql = "SELECT * FROM prestamos WHERE cod_ejem = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codigo);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        }
+    }
+    public static boolean comprobarCodigoEjemplar(Connection conn, int codigo) throws SQLException {
+        String sql = "SELECT * FROM ejemplares WHERE cod_ejem = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, codigo);
             ResultSet rs = stmt.executeQuery();
@@ -1317,7 +1382,7 @@ public class Io{
         Date fechaPrestamo = Date.valueOf(hoy);
         Date fechaEntrega = Date.valueOf(entrega);
         int codPrest = (int) (Math.random()*1000)+1;
-        while (comprobarCodigo(conn, codPrest)) {
+        while (comprobarCodigoPrestamo(conn, codPrest)) {
             codPrest = (int) (Math.random()*1000)+1;
         }
         insertarPrestamo(conn, codPrest, fechaPrestamo, fechaEntrega, codUsuario);
@@ -1398,6 +1463,18 @@ public class Io{
             sop("Estado del ejemplar actualizado");
         } catch (SQLException e) {
             sop("Error al actualizar el estado del ejemplar: " + e.getMessage());
+        }
+    }
+    public static void actualizarLibro(Connection conn, String isbn, int numEjemplares){
+        String sql = "UPDATE libros SET nº_copias_existentes = ? WHERE isbn = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, numEjemplares);
+            stmt.setString(2, isbn);
+            stmt.executeUpdate();
+            stmt.close();
+            sop("Estado del libro actualizado");
+        } catch (SQLException e) {
+            sop("Error al actualizar el estado del libro: " + e.getMessage());
         }
     }
     public static void devolverPrestamo(Connection conn, Scanner scanner) throws SQLException {
