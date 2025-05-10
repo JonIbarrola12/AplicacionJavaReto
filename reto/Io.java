@@ -868,6 +868,27 @@ public class Io{
         }
         return numEjemplares;
     }
+    public static void eliminarRegistro(Connection conn, Scanner scanner) throws SQLException {
+        sop("De que tabla quieres eliminar un registro? (u/ l/ a/ e)");
+        String opcion = scanner.nextLine();
+        switch (opcion) {
+            case "u":
+                eliminarUsuario(conn, scanner);
+                break;
+            case "l":
+                eliminarLibro(conn, scanner);
+                break;
+            case "a":
+                eliminarAutor(conn, scanner);
+                break;
+            case "e":
+                eliminarEjemplares(conn, scanner);
+                break;
+            default:
+                sop("opcion incorrecta");
+                break;
+        }
+    }
     public static void eliminarUsuario(Connection conn, Scanner scanner) throws SQLException {
         mostrarUsuarios(conn);
         sop("Introduce el codigo del usuario a eliminar:");
@@ -896,6 +917,64 @@ public class Io{
             }
         }
     }
+    public static void eliminarLibro(Connection conn, Scanner scanner) throws SQLException {
+        mostrarLibros(conn);
+        sop("Introduce el ISBN del libro a eliminar:");
+        String isbn = scanner.nextLine();
+        String sql = "DELETE FROM libros WHERE isbn = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, isbn);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                sop("Libro eliminado correctamente.");
+            } else {
+                sop("No se encontro ningun libro con ese ISBN.");
+            }
+            eliminarEjemplaresByIsbn(conn, isbn);
+        }
+    }
+    public static void eliminarEjemplaresByIsbn(Connection conn, String isbn) throws SQLException {
+        String sql = "DELETE FROM ejemplares WHERE isbn = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, isbn);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                sop("Ejemplares eliminados correctamente.");
+            } else {
+                sop("No se encontro ningun ejemplar con ese ISBN.");
+            }
+        }
+    }
+    public static void eliminarEjemplares(Connection conn, Scanner scanner) throws SQLException {
+        mostrarEjemplares(conn);
+        String sql = "DELETE FROM ejemplares WHERE cod_ejem = ?";
+        sop("Introduce el codigo del ejemplar a eliminar:");
+        String codEjem = scanner.nextLine();
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, codEjem);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                sop("Ejemplar eliminado correctamente.");
+            } else {
+                sop("No se encontro ningun ejemplar con ese codigo.");
+            }
+        }
+    }
+    public static void eliminarAutor(Connection conn, Scanner scanner) throws SQLException {
+        mostrarAutores(conn);
+        sop("Introduce el DNI del autor a eliminar:");
+        String dni = scanner.nextLine();
+        String sql = "DELETE FROM autores WHERE dni = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, dni);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                sop("Autor eliminado correctamente.");
+            } else {
+                sop("No se encontro ningun autor con ese DNI.");
+            }
+        }
+    }
     public static boolean comprobarCodigoUsuario(Connection conn, int codigo) throws SQLException {
         String sql = "SELECT * FROM usuarios WHERE cod_usuario = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -905,7 +984,7 @@ public class Io{
         }
     }
     public static boolean comprobarCodigoPrestamo(Connection conn, int codigo) throws SQLException {
-        String sql = "SELECT * FROM prestamos WHERE cod_ejem = ?";
+        String sql = "SELECT * FROM prestamos WHERE cod_prest = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, codigo);
             ResultSet rs = stmt.executeQuery();

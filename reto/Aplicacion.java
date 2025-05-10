@@ -58,7 +58,7 @@ public class Aplicacion{
                     break;
                 case 4:
                     try {
-                        Io.eliminarUsuario(conn, scanner);
+                        Io.eliminarRegistro(conn, scanner);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
