@@ -1643,6 +1643,32 @@ public class Io{
         LocalDate localDate2 = fecha2.toLocalDate();
         return (int) ChronoUnit.DAYS.between(localDate1, localDate2);
     }
+    public static void mostrarTablas(Connection conn, Scanner scanner) {
+        
+        sop("De que tabla quieres ver los Campos? (u/ l/ a/ e/ pr/ pe)");
+        String opcion=scanner.nextLine();
+        switch (opcion) {
+            case "u":
+                mostrarUsuariosPaginados(conn, scanner);
+                break;
+            case "l":
+                mostrarLibrosPaginados(conn, scanner);
+                break;
+            case "a":
+                mostrarAutoresPaginados(conn, scanner);
+                break;
+            case "e":
+                mostrarPenalizacionesPaginadas(conn, scanner);
+                break;
+            case "pr":
+                mostrarReservasPaginadas(conn, scanner);
+                break;
+            default:
+                sop("opcion incorrecta");
+                break;
+        }
+
+    }
     public static void mostrarUsuariosPaginados(Connection conn, Scanner scanner){
         int pagina = 0;
         int tamanioPagina = 10;
@@ -2041,82 +2067,6 @@ public class Io{
     
         } catch (SQLException e) {
             sop("Error al mostrar reservas paginadas: " + e.getMessage());
-        }
-    }
-    public static void mostrarLibrosAutoresPaginados(Connection conn, Scanner scanner) {
-        int pagina = 0;
-        int tamanioPagina = 10;
-        int totalRegistros = 0;
-    
-        try {
-            String conteo = "SELECT COUNT(*) FROM libros_autores";
-            PreparedStatement stmtConteo = conn.prepareStatement(conteo);
-            ResultSet rsConteo = stmtConteo.executeQuery();
-    
-            if (rsConteo.next()) {
-                totalRegistros = rsConteo.getInt(1);
-            }
-    
-            rsConteo.close();
-            stmtConteo.close();
-    
-            if (totalRegistros == 0) {
-                sop("No hay relaciones libro-autor en la base de datos");
-                return;
-            }
-    
-            char opcion = ' ';
-            int totalPaginas = (totalRegistros + tamanioPagina - 1) / tamanioPagina;
-    
-            do {
-                Io.clearScreen();
-                sop("Mostrando relaciones libro-autor - Página " + (pagina + 1) + " de " + totalPaginas + "\n");
-    
-                String sql = "SELECT ISBN, DNI FROM libros_autores LIMIT ? OFFSET ?";
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, tamanioPagina);
-                stmt.setInt(2, pagina * tamanioPagina);
-                ResultSet rs = stmt.executeQuery();
-    
-                System.out.printf("%-20s%-20s\n", "ISBN", "DNI");
-                System.out.println("----------------------------------------------------------------------------------------------------------");
-    
-                while (rs.next()) {
-                System.out.printf("%-20s%-20s\n",
-                    rs.getString("ISBN"),
-                    rs.getString("DNI")
-                    );
-                }
-    
-                rs.close();
-                stmt.close();
-    
-                sop("\nNavegar: '+' siguiente, '-' anterior, 'q' salir.");
-                String input = scanner.nextLine();
-                if (!input.isEmpty()) {
-                    opcion = input.charAt(0);
-    
-                    switch (opcion) {
-                        case '+':
-                            pagina = (pagina + 1) % totalPaginas;
-                            break;
-                        case '-':
-                            pagina = (pagina - 1 + totalPaginas) % totalPaginas;
-                            break;
-                        case 'q':
-                            break;
-                        default:
-                            sop("Opción inválida. Usa '+' para avanzar, '-' para retroceder o 'q' para salir.");
-                            sop("Presiona Enter para continuar...");
-                            scanner.nextLine();
-                            break;
-                    }
-                }
-    
-            } while (opcion != 'q');
-    
-        } catch (SQLException e) {
-            sop("Error al mostrar relaciones libro-autor: " + e.getMessage());
         }
     }
 }
