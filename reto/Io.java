@@ -1119,180 +1119,287 @@ public class Io{
 
     }
     public static void crearTablaUsuarios(Connection conn) {
-        try {
-            String sql = "CREATE TABLE usuarios (" +
-                         "cod_usuario INT PRIMARY KEY, " +
-                         "nombre_usuario VARCHAR(40), " +
-                         "contrasena VARCHAR(20), " +
-                         "telefono VARCHAR(20), " +
-                         "direccion VARCHAR(255), " +
-                         "correo_elec VARCHAR(50), " +
-                         "num_ss VARCHAR(20))";
-            Statement stmt = conn.createStatement();
-            stmt.execute(sql);
-            stmt.close();
-            sop("Tabla 'usuarios' creada correctamente.");
-        } catch (SQLException e) {
-            sop("Error al crear la tabla: " + e.getMessage());
+        if (!comprobarExistenciaTablaUsuarios(conn)) {
+            try {
+                String sql = "CREATE TABLE usuarios (" +
+                            "cod_usuario INT PRIMARY KEY, " +
+                            "nombre_usuario VARCHAR(40), " +
+                            "contrasena VARCHAR(20), " +
+                            "telefono VARCHAR(20), " +
+                            "direccion VARCHAR(255), " +
+                            "correo_elec VARCHAR(50), " +
+                            "num_ss VARCHAR(20))";
+                Statement stmt = conn.createStatement();
+                stmt.execute(sql);
+                stmt.close();
+                sop("Tabla 'usuarios' creada correctamente.");
+            } catch (SQLException e) {
+                sop("Error al crear la tabla: " + e.getMessage());
+            }
+        }else{
+            sop("La tabla usuarios ya esta creada.");
         }
     }
     public static void crearTablaAutores(Connection conn) {
-        try {
-            String sql = "CREATE TABLE autores (" +
-                         "dni varchar2(20) PRIMARY KEY, " +
-                         "nombre VARCHAR(20), " +
-                         "ape1 VARCHAR(20), " +
-                         "ape2 VARCHAR(20))";
-            Statement stmt = conn.createStatement();
-            stmt.execute(sql);
-            stmt.close();
-            sop("Tabla 'autores' creada correctamente.");
-        } catch (SQLException e) {
-            sop("Error al crear la tabla: " + e.getMessage());
+        if (!comprobarExistenciaTablaAutores(conn)) {   
+            try {
+                String sql = "CREATE TABLE autores (" +
+                            "dni varchar2(20) PRIMARY KEY, " +
+                            "nombre VARCHAR(20), " +
+                            "ape1 VARCHAR(20), " +
+                            "ape2 VARCHAR(20))";
+                Statement stmt = conn.createStatement();
+                stmt.execute(sql);
+                stmt.close();
+                sop("Tabla 'autores' creada correctamente.");
+            } catch (SQLException e) {
+                sop("Error al crear la tabla: " + e.getMessage());
+            }
+        }else{
+            sop("La tabla autores ya esta creada.");
         }
     }
     public static void crearTablaEjemplares(Connection conn) {
-        try {
-            String sql = "CREATE TABLE ejemplares (" +
-                         "cod_ejem int(5) PRIMARY KEY, " +
-                         "idioma VARCHAR(20), " +
-                         "estado VARCHAR(30), " +
-                         "isbn VARCHAR(13), " +
-                         "cod_prest int(5))";
-            Statement stmt = conn.createStatement();
-            stmt.execute(sql);
-            stmt.close();
-            sop("Tabla 'ejemplares' creada correctamente.");
-        } catch (SQLException e) {
-            sop("Error al crear la tabla: " + e.getMessage());
+        if (!comprobarExistenciaTablaEjemplares(conn)) {    
+            try {
+                String sql = "CREATE TABLE ejemplares (" +
+                            "cod_ejem int(5) PRIMARY KEY, " +
+                            "idioma VARCHAR(20), " +
+                            "estado VARCHAR(30), " +
+                            "isbn VARCHAR(13), " +
+                            "cod_prest int(5))";
+                Statement stmt = conn.createStatement();
+                stmt.execute(sql);
+                stmt.close();
+                sop("Tabla 'ejemplares' creada correctamente.");
+            } catch (SQLException e) {
+                sop("Error al crear la tabla: " + e.getMessage());
+            }
+        }else{
+            sop("La tabla ejemplares ya esta creada.");
         }
     }
     public static void crearTablaLibros(Connection conn) {
-        try {
-            String sql = "CREATE TABLE libros (" +
-                         "isbn int(13) PRIMARY KEY, " +
-                         "titulo VARCHAR(20), " +
-                         "paginas VARCHAR(30), " +
-                         "urlimg VARCHAR(13))";
-            Statement stmt = conn.createStatement();
-            stmt.execute(sql);
-            stmt.close();
-            sop("Tabla 'libros' creada correctamente.");
-        } catch (SQLException e) {
-            sop("Error al crear la tabla: " + e.getMessage());
+        if (!comprobarExistenciaTablaLibros(conn)) {    
+            try {
+                String sql = "CREATE TABLE libros (" +
+                            "isbn int(13) PRIMARY KEY, " +
+                            "titulo VARCHAR(20), " +
+                            "paginas VARCHAR(30), " +
+                            "urlimg VARCHAR(13))";
+                Statement stmt = conn.createStatement();
+                stmt.execute(sql);
+                stmt.close();
+                sop("Tabla 'libros' creada correctamente.");
+            } catch (SQLException e) {
+                sop("Error al crear la tabla: " + e.getMessage());
+            }
+        }else{
+            sop("La tabla libros ya esta creada.");
         }
     }
     public static void crearTablaPrestamos(Connection conn) {
-        try {
-            String sql = "CREATE TABLE prestamos (" +
-                         "cod_prest INT PRIMARY KEY, " +
-                         "fecha_prestamo DATE, " +
-                         "fecha_entrega DATE, " +
-                         "fecha_devolucion DATE, " +
-                         "cod_usuario INT, " +
-                         "FOREIGN KEY (cod_usuario) REFERENCES usuarios(cod_usuario))";
-            
-            Statement stmt = conn.createStatement();
-            stmt.execute(sql);
-            stmt.close();
-            sop("Tabla 'prestamos' creada correctamente.");
-        } catch (SQLException e) {
-            sop("Error al crear la tabla: " + e.getMessage());
+        if (!comprobarExistenciaTablaPrestamos(conn)) {    
+            try {
+                String sql = "CREATE TABLE prestamos (" +
+                            "cod_prest INT PRIMARY KEY, " +
+                            "fecha_prestamo DATE, " +
+                            "fecha_entrega DATE, " +
+                            "fecha_devolucion DATE, " +
+                            "cod_usuario INT, " +
+                            "FOREIGN KEY (cod_usuario) REFERENCES usuarios(cod_usuario))";
+                
+                Statement stmt = conn.createStatement();
+                stmt.execute(sql);
+                stmt.close();
+                sop("Tabla 'prestamos' creada correctamente.");
+            } catch (SQLException e) {
+                sop("Error al crear la tabla: " + e.getMessage());
+            }
+        }else{
+            sop("La tabla prestamos ya esta creada.");
         }   
     }
     public static void crearTablaPenalizaciones(Connection conn) {
-        try {
-            String sql = "CREATE TABLE penalizaciones (" +
-                         "id INT PRIMARY KEY AUTO_INCREMENT, " +
-                         "cod_usuario INT, " +
-                         "motivo VARCHAR(255), " +
-                         "fecha_inicio DATE, " +
-                         "fecha_fin DATE, " +
-                         "FOREIGN KEY (cod_usuario) REFERENCES usuarios(cod_usuario))";
-            
-            Statement stmt = conn.createStatement();
-            stmt.execute(sql);
-            stmt.close();
-            sop("Tabla 'penalizaciones' creada correctamente.");
-        } catch (SQLException e) {
-            sop("Error al crear la tabla: " + e.getMessage());
+        if (!comprobarExistenciaTablaPenalizaciones(conn)) {    
+            try {
+                String sql = "CREATE TABLE penalizaciones (" +
+                            "id INT PRIMARY KEY AUTO_INCREMENT, " +
+                            "cod_usuario INT, " +
+                            "motivo VARCHAR(255), " +
+                            "fecha_inicio DATE, " +
+                            "fecha_fin DATE, " +
+                            "FOREIGN KEY (cod_usuario) REFERENCES usuarios(cod_usuario))";
+                
+                Statement stmt = conn.createStatement();
+                stmt.execute(sql);
+                stmt.close();
+                sop("Tabla 'penalizaciones' creada correctamente.");
+            } catch (SQLException e) {
+                sop("Error al crear la tabla: " + e.getMessage());
+            }
+        }else{
+            sop("La tabla penalizaciones ya esta creada.");
         }
     }
 
     public static void borrarTablaUsuarios(Connection conn) {
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-            stmt.executeUpdate("DROP TABLE IF EXISTS usuarios");
-            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
-            stmt.close();
-            sop("Tabla eliminada correctamente");
-        } catch (SQLException e) {
-            sop("Error al eliminar las tabla: " + e.getMessage());
+        if (comprobarExistenciaTablaUsuarios(conn)) {
+            try {
+                Statement stmt = conn.createStatement();
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                stmt.executeUpdate("DROP TABLE IF EXISTS usuarios");
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+                stmt.close();
+                sop("Tabla eliminada correctamente");
+            } catch (SQLException e) {
+                sop("Error al eliminar las tabla: " + e.getMessage());
+            }
+        }else{
+            sop("La tabla usuarios ya estaba eliminada.");
         }
     }
     public static void borrarTablaLibros(Connection conn) {
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-            stmt.executeUpdate("DROP TABLE IF EXISTS libros");
-            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
-            stmt.close();
-            sop("Tabla eliminada correctamente");
-        } catch (SQLException e) {
-            sop("Error al eliminar las tabla: " + e.getMessage());
+        if (comprobarExistenciaTablaLibros(conn)) {
+            try {
+                Statement stmt = conn.createStatement();
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                stmt.executeUpdate("DROP TABLE IF EXISTS libros");
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+                stmt.close();
+                sop("Tabla eliminada correctamente");
+            } catch (SQLException e) {
+                sop("Error al eliminar las tabla: " + e.getMessage());
+            }
+        }else{
+            sop("La tabla libros ya estaba eliminada.");
         }
     }
     public static void borrarTablaEjemplares(Connection conn) {
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-            stmt.executeUpdate("DROP TABLE IF EXISTS ejemplares");
-            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
-            stmt.close();
-            sop("Tabla eliminada correctamente");
-        } catch (SQLException e) {
-            sop("Error al eliminar las tabla: " + e.getMessage());
+        if (comprobarExistenciaTablaEjemplares(conn)) {
+            try {
+                Statement stmt = conn.createStatement();
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                stmt.executeUpdate("DROP TABLE IF EXISTS ejemplares");
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+                stmt.close();
+                sop("Tabla eliminada correctamente");
+            } catch (SQLException e) {
+                sop("Error al eliminar las tabla: " + e.getMessage());
+            }
+        }else{
+            sop("La tabla ejemplares ya estaba eliminada.");
         }
     }
     public static void borrarTablaAutores(Connection conn) {
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-            stmt.executeUpdate("DROP TABLE IF EXISTS autores");
-            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
-            stmt.close();
-            sop("Tabla eliminada correctamente");
-        } catch (SQLException e) {
-            sop("Error al eliminar las tabla: " + e.getMessage());
+        if (comprobarExistenciaTablaAutores(conn)){
+            try {
+                Statement stmt = conn.createStatement();
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                stmt.executeUpdate("DROP TABLE IF EXISTS autores");
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+                stmt.close();
+                sop("Tabla eliminada correctamente");
+            } catch (SQLException e) {
+                sop("Error al eliminar las tabla: " + e.getMessage());
+            }
+        }else{
+            sop("La tabla autores ya estaba eliminada.");
         }
     }
     public static void borrarTablaPrestamos(Connection conn) {
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-            stmt.executeUpdate("DROP TABLE IF EXISTS prestamos");
-            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
-            stmt.close();
-            sop("Tabla 'prestamos' eliminada correctamente.");
-        } catch (SQLException e) {
-            sop("Error al eliminar la tabla 'prestamos': " + e.getMessage());
+        if (comprobarExistenciaTablaPrestamos(conn)) {
+            try {
+                Statement stmt = conn.createStatement();
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                stmt.executeUpdate("DROP TABLE IF EXISTS prestamos");
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+                stmt.close();
+                sop("Tabla 'prestamos' eliminada correctamente.");
+            } catch (SQLException e) {
+                sop("Error al eliminar la tabla 'prestamos': " + e.getMessage());
+            }
+        }else{
+            sop("La tabla prestamos ya estaba eliminada.");
         }
     }
     
     public static void borrarTablaPenalizaciones(Connection conn) {
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-            stmt.executeUpdate("DROP TABLE IF EXISTS penalizaciones");
-            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
-            stmt.close();
-            sop("Tabla 'penalizaciones' eliminada correctamente.");
-        } catch (SQLException e) {
-            sop("Error al eliminar la tabla 'penalizaciones': " + e.getMessage());
+        if (comprobarExistenciaTablaPenalizaciones(conn)) {  
+            try {
+                Statement stmt = conn.createStatement();
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                stmt.executeUpdate("DROP TABLE IF EXISTS penalizaciones");
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+                stmt.close();
+                sop("Tabla 'penalizaciones' eliminada correctamente.");
+            } catch (SQLException e) {
+                sop("Error al eliminar la tabla 'penalizaciones': " + e.getMessage());
+            }
+        }else{
+            sop("La tabla penalizaciones ya estaba eliminada.");
         }
     }
-
+    public static boolean comprobarExistenciaTablaUsuarios(Connection conn) {
+        String sql = "SHOW TABLES LIKE 'usuarios'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        } catch (SQLException e) {
+            sop("Error al comprobar la existencia de la tabla 'usuarios': " + e.getMessage());
+            return false;
+        }
+    }
+    public static boolean comprobarExistenciaTablaLibros(Connection conn) {
+        String sql = "SHOW TABLES LIKE 'libros'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        } catch (SQLException e) {
+            sop("Error al comprobar la existencia de la tabla 'libros': " + e.getMessage());
+            return false;
+        }
+    }
+    public static boolean comprobarExistenciaTablaEjemplares(Connection conn) {
+        String sql = "SHOW TABLES LIKE 'ejemplares'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        } catch (SQLException e) {
+            sop("Error al comprobar la existencia de la tabla 'ejemplares': " + e.getMessage());
+            return false;
+        }
+    }
+    public static boolean comprobarExistenciaTablaAutores(Connection conn) {
+        String sql = "SHOW TABLES LIKE 'autores'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        } catch (SQLException e) {
+            sop("Error al comprobar la existencia de la tabla 'autores': " + e.getMessage());
+            return false;
+        }
+    }
+    public static boolean comprobarExistenciaTablaPrestamos(Connection conn) {
+        String sql = "SHOW TABLES LIKE 'prestamos'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        } catch (SQLException e) {
+            sop("Error al comprobar la existencia de la tabla 'prestamos': " + e.getMessage());
+            return false;
+        }
+    }
+    public static boolean comprobarExistenciaTablaPenalizaciones(Connection conn) {
+        String sql = "SHOW TABLES LIKE 'penalizaciones'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
+        } catch (SQLException e) {
+            sop("Error al comprobar la existencia de la tabla 'penalizaciones': " + e.getMessage());
+            return false;
+        }
+    }
     public static void mostrarCampos(Connection conn, Scanner scanner) {
         
         sop("De que tabla quieres ver los Campos? (u/ l/ a/ e/ pr/ pe)");
@@ -1561,9 +1668,10 @@ public class Io{
         sop("Introduce el nombre de usuario:");
         String nombre = scanner.nextLine();
         String codUsuario = getCodUsuarioByNombre(conn, scanner, nombre);
-        if (codUsuario.isEmpty()) {
-            sop("No se encontro ningun usuario con ese nombre.");
-            return;
+        while (codUsuario == null) {
+            sop("Introduce el nombre de usuario:");
+            nombre = scanner.nextLine();
+            codUsuario = getCodUsuarioByNombre(conn, scanner, nombre);
         }
         mostrarPrestamosByCodUsuario(conn, codUsuario);
         sop("Introduce el codigo del prestamo:");
