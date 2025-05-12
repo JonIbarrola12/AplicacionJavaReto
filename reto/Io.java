@@ -1748,11 +1748,9 @@ public class Io{
         if (diasPrestado > 30) {
             int diasDePenalizacion = (diasPrestado - 30) * 2;;
             generarPenalizaciones(conn, scanner, codUsuario, diasDePenalizacion, fechaEntrega);
-            eliminarPrestamo(conn, codUsuario, codPrestamo);
             actualizarEjemplarDevolucion(conn, codPrestamo);
             sop("El libro ha sido devuelto, pero has recibido una penalizacion de " + diasDePenalizacion + " dias.");
         } else {
-            eliminarPrestamo(conn, codUsuario, codPrestamo);
             actualizarEjemplarDevolucion(conn, codPrestamo);
             sop("El libro ha sido devuelto a tiempo.");
         }
