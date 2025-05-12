@@ -1551,44 +1551,86 @@ public class Io{
             nombre = scanner.nextLine();
         }
         String codUsuario = getCodUsuarioByNombre(conn, scanner, nombre);
-        mostrarLibros(conn);
-        sop("Introduce el isbn del libro que quiere:");
-        String isbn = scanner.nextLine();
-        if (!comprobarISBN(conn, isbn)) {
-            sop("El ISBN no existe. Introduce otro ISBN:");
-            isbn = scanner.nextLine();
+        eliminarPenalizacion(conn, codUsuario);
+        if (comprobarCantidadPrestamos(conn, null)){
+            if(!algunaPenalizacion(conn, codUsuario)){
+                mostrarLibros(conn);
+                sop("Introduce el isbn del libro que quiere:");
+                String isbn = scanner.nextLine();
+                if (!comprobarISBN(conn, isbn)) {
+                    sop("El ISBN no existe. Introduce otro ISBN:");
+                    isbn = scanner.nextLine();
+                }
+                if (!algunaDisponibilidad(conn,isbn)) {
+                    sop("No hay ejemplares disponibles.");
+                    continuar(scanner);
+                    mostrarLibros(conn);
+                    sop("Introduce el isbn del libro que quiere:");
+                    isbn = scanner.nextLine();
+                    if (!comprobarISBN(conn, isbn)) {
+                        sop("El ISBN no existe. Introduce otro ISBN:");
+                        isbn = scanner.nextLine();
+                    }
+                }
+                mostrarEjemplaresByIsbn(conn, isbn);
+                sop("Introduce el codigo del ejemplar:");
+                int codEjemplar = scanner.nextInt();
+                scanner.nextLine();
+                while  (!comprobarDisponibilidad(conn,codEjemplar)){
+                    sop("El ejemplar no esta disponible. Introduce otro codigo:");
+                    codEjemplar = scanner.nextInt();
+                    scanner.nextLine();
+                }
+                LocalDate hoy = LocalDate.now();
+                LocalDate entrega = hoy.plusDays(30);
+
+                Date fechaPrestamo = Date.valueOf(hoy);
+                Date fechaEntrega = Date.valueOf(entrega);
+                int codPrest = (int) (Math.random()*1000)+1;
+                while (comprobarCodigoPrestamo(conn, codPrest)) {
+                    codPrest = (int) (Math.random()*1000)+1;
+                }
+                insertarPrestamo(conn, codPrest, fechaPrestamo, fechaEntrega, codUsuario);
+                actualizarEjemplar(conn, codPrest, codEjemplar);
+            }else{
+                sop("El usuario tiene una penalizacion activa.");
+            }
+        }else{
+            sop("El usuario ya tiene 3 prestamos activos.");
         }
-        if (!algunaDisponibilidad(conn,isbn)) {
-            sop("No hay ejemplares disponibles.");
-            continuar(scanner);
-            mostrarLibros(conn);
-            sop("Introduce el isbn del libro que quiere:");
-            isbn = scanner.nextLine();
-            if (!comprobarISBN(conn, isbn)) {
-                sop("El ISBN no existe. Introduce otro ISBN:");
-                isbn = scanner.nextLine();
+    }
+    public static boolean comprobarCantidadPrestamos(Connection conn, String codUsuario) throws SQLException {
+        String sql = "SELECT Count(*) FROM prestamos WHERE cod_usuario = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, codUsuario);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int cantidad = rs.getInt(1);
+                if (cantidad >= 3) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }else {
+                sop("Error al comprobar la cantidad de prestamos.");
+                return false;
             }
         }
-        mostrarEjemplaresByIsbn(conn, isbn);
-        sop("Introduce el codigo del ejemplar:");
-        int codEjemplar = scanner.nextInt();
-        scanner.nextLine();
-        while  (!comprobarDisponibilidad(conn,codEjemplar)){
-            sop("El ejemplar no esta disponible. Introduce otro codigo:");
-            codEjemplar = scanner.nextInt();
-            scanner.nextLine();
+    }
+    public static boolean algunaPenalizacion(Connection conn, String codUsuario) throws SQLException {
+        String sql = "SELECT * FROM penalizaciones WHERE cod_usuarios = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, codUsuario);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); 
         }
-        LocalDate hoy = LocalDate.now();
-        LocalDate entrega = hoy.plusDays(30);
-
-        Date fechaPrestamo = Date.valueOf(hoy);
-        Date fechaEntrega = Date.valueOf(entrega);
-        int codPrest = (int) (Math.random()*1000)+1;
-        while (comprobarCodigoPrestamo(conn, codPrest)) {
-            codPrest = (int) (Math.random()*1000)+1;
+    }
+    public static void eliminarPenalizacion(Connection conn, String codUsuario) throws SQLException {
+        String sql = "DELETE FROM penalizaciones WHERE cod_usuarios = ? AND DATE_ADD(fecha_pen, INTERVAL 30 DAY) < CURRENT_DATE";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, codUsuario);
+            stmt.executeUpdate();
         }
-        insertarPrestamo(conn, codPrest, fechaPrestamo, fechaEntrega, codUsuario);
-        actualizarEjemplar(conn, codPrest, codEjemplar);
     }
     public static String  getCodUsuarioByNombre(Connection conn, Scanner scanner, String nombre) throws SQLException {
         String sql = "SELECT cod_usuario FROM usuarios WHERE nombre_usuario = ?";
