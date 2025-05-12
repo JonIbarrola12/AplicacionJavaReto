@@ -1554,6 +1554,21 @@ public class Io{
         mostrarLibros(conn);
         sop("Introduce el isbn del libro que quiere:");
         String isbn = scanner.nextLine();
+        if (!comprobarISBN(conn, isbn)) {
+            sop("El ISBN no existe. Introduce otro ISBN:");
+            isbn = scanner.nextLine();
+        }
+        if (!algunaDisponibilidad(conn,isbn)) {
+            sop("No hay ejemplares disponibles.");
+            continuar(scanner);
+            mostrarLibros(conn);
+            sop("Introduce el isbn del libro que quiere:");
+            isbn = scanner.nextLine();
+            if (!comprobarISBN(conn, isbn)) {
+                sop("El ISBN no existe. Introduce otro ISBN:");
+                isbn = scanner.nextLine();
+            }
+        }
         mostrarEjemplaresByIsbn(conn, isbn);
         sop("Introduce el codigo del ejemplar:");
         int codEjemplar = scanner.nextInt();
@@ -1618,9 +1633,10 @@ public class Io{
             return rs.next(); 
         }
     }
-    public static boolean algunaDisponibilidad(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM ejemplares WHERE estado = 'disponible'";
+    public static boolean algunaDisponibilidad(Connection conn, String isbn) throws SQLException {
+        String sql = "SELECT * FROM ejemplares WHERE isbn= ? AND estado = 'disponible'";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, isbn);
             ResultSet rs = stmt.executeQuery();
             return rs.next(); 
         }
