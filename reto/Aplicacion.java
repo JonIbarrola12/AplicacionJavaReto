@@ -7,7 +7,7 @@ public class Aplicacion{
     public static void main(String[] args) {
         char opc;
         Scanner scanner = new Scanner(System.in);
-        int opcion;
+        int opcion =-1 ;
         String fechaActual= Io.fechaActual();
         Connection conn= null;
         String url = "jdbc:mysql://127.0.0.1:3306/BibliotecaMuskiz";
@@ -31,9 +31,16 @@ public class Aplicacion{
             Io.sop("0. Salir");
             Io.sop("\nElige una opción: ");
 
-            opcion = scanner.nextInt();
-            scanner.nextLine();
-            
+            while(true){
+                if(scanner.hasNextInt()){
+                    opcion = scanner.nextInt();
+                    scanner.nextLine();
+                    break;
+                }else{
+                    Io.sop("No se introdujo un numero. Preube de nuevo");
+                    scanner.nextLine();
+                }
+            }
             switch (opcion) {
                 case 1:
                     conn=Io.getConexion(url, usuario, password);
@@ -148,7 +155,6 @@ public class Aplicacion{
             }
             Io.clearScreen();
         } while (opcion != 0);
-
         scanner.close();
     }
   
