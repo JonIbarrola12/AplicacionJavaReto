@@ -709,7 +709,12 @@ public class Io{
         insertarAutor(conn, scanner, dni, nombre, apellido, apellido2);
     }
     public static void anadirEjemplar(Connection conn, Scanner scanner) throws SQLException {
-        String isbn = generarISBN(conn, scanner);
+        sop("Introduce el isbn:");
+        String isbn = scanner.nextLine();
+        while (!comprobarISBN(conn, isbn)) {
+            sop("Introduce el isbn:");
+            isbn = scanner.nextLine();
+        }
         insertarEjemplar(conn, scanner, isbn);
     }
     public static void insertarAutor(Connection conn, Scanner scanner, String dni, String nombre , String apellido , String apellido2) throws SQLException {
