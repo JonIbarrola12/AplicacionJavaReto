@@ -25,7 +25,7 @@ public class Aplicacion{
             Io.sop("5. Realizar la desconexion                                      6. Buscar por Clave Primaria");
             Io.sop("7. Gestionar Tablas (Crear/Borrar)                              8. Devolver Prestamo    ");
             Io.sop("9. Hacer Prestamo                                               10. Mostrar Usuarios Paginando");
-            Io.sop("11. Aumentar el tamaño del CMD                                  12. Disminuir el tamaño del CMD");
+            Io.sop("11. Disminuir el tamaño del CMD                                 12. Aumentar el tamaño del CMD");
             Io.sop("13. Mostrar campos de la Tablas");
             Io.sop("0. Salir");
             Io.sop("\nElige una opción: ");
@@ -133,12 +133,14 @@ public class Aplicacion{
                     Io.aumentarFuenteCmd(16);
                     Io.Sop("Se va a cerrar el programa para que los cambios");
                     Io.Sop("tengan efecto");
+                    Io.continuar(scanner);
                     return;
                 case 12:
                     // Disminuir tamaño
                     Io.aumentarFuenteCmd(28);
                     Io.Sop("Se va a cerrar el programa para que los cambios");
                     Io.Sop("tengan efecto");
+                    Io.continuar(scanner);
                     return;
                 case 13:
                     Io.mostrarCampos(conn, scanner);
