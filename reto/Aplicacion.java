@@ -44,7 +44,7 @@ public class Aplicacion{
                 case 1:
                     conn=Io.getConexion(url, usuario, password);
                     Io.sop("Estado de la conexion: " + Io.estadoConexion(conn));
-                    Io.continuar(scanner);;
+                    Io.continuar(scanner);
                     break;
                 case 2:
                     try {
