@@ -134,15 +134,13 @@ public class Aplicacion{
                     Io.aumentarFuenteCmd(16);
                     Io.Sop("Se va a cerrar el programa para que los cambios");
                     Io.Sop("tengan efecto");
-                    opc='0';
-                    break;
+                    return;
                 case 12:
                     // Disminuir tamaño
                     Io.aumentarFuenteCmd(28);
                     Io.Sop("Se va a cerrar el programa para que los cambios");
                     Io.Sop("tengan efecto");
-                    opc='0';
-                    break;
+                    return;
                 case 13:
                     Io.mostrarCampos(conn, scanner);
                     Io.continuar(scanner);
