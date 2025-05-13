@@ -474,7 +474,7 @@ public class Io{
         stmt.close();
     }
     public static void mostrarPrestamosByCodUsuario(Connection conn, String codUsuario) throws SQLException {
-        String sql = "SELECT * FROM prestamos WHERE cod_usuario = ?";
+        String sql = "SELECT * FROM prestamos WHERE cod_usuario = ? AND fecha_devolucion IS NULL";
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setString(1, codUsuario);
         ResultSet rs = stmt.executeQuery();
