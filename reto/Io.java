@@ -955,14 +955,18 @@ public class Io{
         String sql = "DELETE FROM ejemplares WHERE cod_ejem = ?";
         sop("Introduce el codigo del ejemplar a eliminar:");
         String codEjem = scanner.nextLine();
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, codEjem);
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                sop("Ejemplar eliminado correctamente.");
-            } else {
-                sop("No se encontro ningun ejemplar con ese codigo.");
+        if (comprobarEjemplares(conn,scanner,codEjem)){
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, codEjem);
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    sop("Ejemplar eliminado correctamente.");
+                } else {
+                    sop("No se encontro ningun ejemplar con ese codigo.");
+                }
             }
+        }else{
+            sop("No se puede eliminar el ejemplar ya que es el ultimo que queda de ese libro");
         }
     }
     public static void eliminarAutor(Connection conn, Scanner scanner) throws SQLException {
@@ -979,6 +983,20 @@ public class Io{
                 sop("No se encontro ningun autor con ese DNI.");
             }
         }
+    }
+    public static boolean comprobarEjemplares(Connection conn, Scanner scanner, String codEjem){
+        String sql = "SELECT * FROM ejemplares WHERE cod_ejem = ?";
+        int cont=0;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setString(1, codEjem);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                cont++;
+            }
+        }catch (SQLException e){
+            sop("Error al eliminar el ejemplar: "+ e.getMessage());
+        }
+        return cont<2;
     }
     public static boolean comprobarCodigoUsuario(Connection conn, int codigo) throws SQLException {
         String sql = "SELECT * FROM usuarios WHERE cod_usuario = ?";
