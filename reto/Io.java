@@ -1259,8 +1259,7 @@ public class Io{
                             "fecha_prestamo DATE, " +
                             "fecha_entrega DATE, " +
                             "fecha_devolucion DATE, " +
-                            "cod_usuario INT, " +
-                            "FOREIGN KEY (cod_usuario) REFERENCES usuarios(cod_usuario))";
+                            "cod_usuario INT)";
                 
                 Statement stmt = conn.createStatement();
                 stmt.execute(sql);
