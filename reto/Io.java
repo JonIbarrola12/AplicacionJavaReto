@@ -927,15 +927,19 @@ public class Io{
         sop("Introduce el ISBN del libro a eliminar:");
         String isbn = scanner.nextLine();
         String sql = "DELETE FROM libros WHERE isbn = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, isbn);
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                sop("Libro eliminado correctamente.");
-            } else {
-                sop("No se encontro ningun libro con ese ISBN.");
+        if (!comprobarEjemplaresEnPrestamo(conn, isbn)){
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, isbn);
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    sop("Libro eliminado correctamente.");
+                } else {
+                    sop("No se encontro ningun libro con ese ISBN.");
+                }
+                eliminarEjemplaresByIsbn(conn, isbn);
             }
-            eliminarEjemplaresByIsbn(conn, isbn);
+        }else{
+            sop("No se pudo eliminar ya que hay un ejemplar en prestamo");
         }
     }
     public static void eliminarEjemplaresByIsbn(Connection conn, String isbn) throws SQLException {
@@ -955,8 +959,8 @@ public class Io{
         String sql = "DELETE FROM ejemplares WHERE cod_ejem = ?";
         sop("Introduce el codigo del ejemplar a eliminar:");
         String codEjem = scanner.nextLine();
-        if (comprobarEjemplarEnPrestamo(conn,scanner,codEjem)){
-            if (comprobarCantidadEjemplares(conn,scanner,codEjem)){
+        if (!comprobarEjemplarEnPrestamo(conn, codEjem)){
+            if (!comprobarCantidadEjemplares(conn, codEjem)){
                 try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                     stmt.setString(1, codEjem);
                     int rowsAffected = stmt.executeUpdate();
@@ -988,7 +992,7 @@ public class Io{
             }
         }
     }
-    public static boolean comprobarCantidadEjemplares(Connection conn, Scanner scanner, String codEjem){
+    public static boolean comprobarCantidadEjemplares(Connection conn, String codEjem){
         String sql = "SELECT * FROM ejemplares WHERE cod_ejem = ?";
         int cont=0;
         try (PreparedStatement stmt = conn.prepareStatement(sql)){
@@ -1002,7 +1006,7 @@ public class Io{
         }
         return cont<2;
     }
-    public static boolean comprobarEjemplarEnPrestamo(Connection conn, Scanner scanner, String codEjem){
+    public static boolean comprobarEjemplarEnPrestamo(Connection conn, String codEjem){
         String sql ="SELECT * FROM ejemplares WHERE cod_ejem = ? AND estado != 'disponible'";
         try (PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setString(1, codEjem);
@@ -1011,6 +1015,17 @@ public class Io{
         }catch(SQLException e){
             sop("Error al comprobar el estado de los ejemplares: "+ e.getMessage());
             return false;
+        }
+    }
+    public static boolean comprobarEjemplaresEnPrestamo(Connection conn, String isbn){
+        String sql ="SELECT * FROM ejemplares WHERE isbn = ? AND estado != 'disponible'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setString(1, isbn);
+            ResultSet rs =stmt.executeQuery();
+            return rs.next();
+        }catch(SQLException e){
+            sop("Error al comprobar el estado de los ejemplares: "+ e.getMessage());
+            return true;
         }
     }
     public static boolean comprobarCodigoUsuario(Connection conn, int codigo) throws SQLException {
