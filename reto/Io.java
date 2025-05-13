@@ -282,191 +282,185 @@ public class Io{
         String opcion = scanner.nextLine();
         switch (opcion) {
             case "u":
-                mostrarUsuarios(conn);
+                mostrarRegistrosTabla(conn, "usuarios");
                 break;
             case "l":
-                mostrarLibros(conn);
+                mostrarRegistrosTabla(conn, "libros");
                 break;
             case "a":
-                mostrarAutores(conn);
+                mostrarRegistrosTabla(conn, "autores");
                 break;
             case "e":
-                mostrarEjemplares(conn);
+                mostrarRegistrosTabla(conn, "ejemplares");
                 break;
             case "pr":
-                mostrarPrestamos(conn);
+                mostrarRegistrosTabla(conn, "prestamos");
                 break;
             case "pe":
-                mostrarPenalizaciones(conn);
+                mostrarRegistrosTabla(conn, "penalizaciones");
                 break;
             default:
                 sop("opcion incorrecta");
                 break;
         }
     }
-    public static void mostrarUsuarios(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM usuarios";
+    public static void mostrarRegistrosTabla(Connection conn, String tabla) throws SQLException {
+        String sql = "SELECT * FROM "+ tabla;
         PreparedStatement stmt = conn.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
-
-        int[] columnWidths = {15, 20, 15, 15, 25, 30, 15};
         
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
         for (int i=1; i <= columnCount; i++) {
             String columnName = rsmd.getColumnName(i);
-            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
+            System.out.printf("%-20s", columnName.length() > 15 ? columnName.substring(0, 15)+"..." : columnName);
         }
         System.out.println();
         while (rs.next()) {
             for (int i = 1; i <= columnCount; i++) {
                 String columnValue = rs.getString(i);
-                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
+                String safeValue = columnValue == null ? "" : columnValue;
+                System.out.printf("%-20s", safeValue.length() > 15 ? safeValue.substring(0, 15)+"..." : safeValue);
             }
             System.out.println();
         }
         rs.close();
         stmt.close();
     }
-    public static void mostrarLibros(Connection conn) throws SQLException {
-        String sql = "SELECT isbn,titulo,paginas FROM libros";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        ResultSet rs = stmt.executeQuery();
-
-        int[] columnWidths = {20, 60, 20};
+    // public static void mostrarLibros(Connection conn) throws SQLException {
+    //     String sql = "SELECT isbn,titulo,paginas FROM libros";
+    //     PreparedStatement stmt = conn.prepareStatement(sql);
+    //     ResultSet rs = stmt.executeQuery();
         
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int columnCount = rsmd.getColumnCount();
-        for (int i=1; i <= columnCount; i++) {
-            String columnName = rsmd.getColumnName(i);
-            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
-        }
-        System.out.println();
-        while (rs.next()) {
-            for (int i = 1; i <= columnCount; i++) {
-                String columnValue = rs.getString(i);
-                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
-            }
-            System.out.println();
-        }
-        rs.close();
-        stmt.close();
-    }
-    public static void mostrarAutores(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM autores";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        ResultSet rs = stmt.executeQuery();
-
-        int[] columnWidths = {20, 20, 20, 20};
+    //     ResultSetMetaData rsmd = rs.getMetaData();
+    //     int columnCount = rsmd.getColumnCount();
+    //     for (int i=1; i <= columnCount; i++) {
+    //         String columnName = rsmd.getColumnName(i);
+    //         System.out.printf("%-20s", columnName.length() > 15 ? columnName.substring(0, 15) : columnName);
+    //     }
+    //     System.out.println();
+    //     while (rs.next()) {
+    //         for (int i = 1; i <= columnCount; i++) {
+    //             String columnValue = rs.getString(i);
+    //             String safeValue = columnValue == null ? "" : columnValue;
+    //             System.out.printf("%-20s", columnValue.length() > 15 ? safeValue.substring(0, 15) : safeValue);
+    //         }
+    //         System.out.println();
+    //     }
+    //     rs.close();
+    //     stmt.close();
+    // }
+    // public static void mostrarAutores(Connection conn) throws SQLException {
+    //     String sql = "SELECT * FROM autores";
+    //     PreparedStatement stmt = conn.prepareStatement(sql);
+    //     ResultSet rs = stmt.executeQuery();
         
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int columnCount = rsmd.getColumnCount();
-        for (int i=1; i <= columnCount; i++) {
-            String columnName = rsmd.getColumnName(i);
-            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
-        }
-        System.out.println();
-        while (rs.next()) {
-            for (int i = 1; i <= columnCount; i++) {
-                String columnValue = rs.getString(i);
-                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
-            }
-            System.out.println();
-        }
-        rs.close();
-        stmt.close();
-    }
-    public static void mostrarEjemplares(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM ejemplares";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        ResultSet rs = stmt.executeQuery();
-
-        int[] columnWidths = {15, 20, 20, 20, 20};
+    //     ResultSetMetaData rsmd = rs.getMetaData();
+    //     int columnCount = rsmd.getColumnCount();
+    //     for (int i=1; i <= columnCount; i++) {
+    //         String columnName = rsmd.getColumnName(i);
+    //         System.out.printf("%-20s", columnName.length() > 15 ? columnName.substring(0, 15) : columnName);
+    //     }
+    //     System.out.println();
+    //     while (rs.next()) {
+    //         for (int i = 1; i <= columnCount; i++) {
+    //             String columnValue = rs.getString(i);
+    //             String safeValue = columnValue == null ? "" : columnValue;
+    //             System.out.printf("%-20s", columnValue.length() > 15 ? safeValue.substring(0, 15) : safeValue);
+    //         }
+    //         System.out.println();
+    //     }
+    //     rs.close();
+    //     stmt.close();
+    // }
+    // public static void mostrarEjemplares(Connection conn) throws SQLException {
+    //     String sql = "SELECT * FROM ejemplares";
+    //     PreparedStatement stmt = conn.prepareStatement(sql);
+    //     ResultSet rs = stmt.executeQuery();
         
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int columnCount = rsmd.getColumnCount();
-        for (int i=1; i <= columnCount; i++) {
-            String columnName = rsmd.getColumnName(i);
-            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
-        }
-        System.out.println();
-        while (rs.next()) {
-            for (int i = 1; i <= columnCount; i++) {
-                String columnValue = rs.getString(i);
-                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
-            }
-            System.out.println();
-        }
-        rs.close();
-        stmt.close();
-    }
-    public static void mostrarPrestamos(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM prestamos";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        ResultSet rs = stmt.executeQuery();
-
-        int[] columnWidths = {15, 20, 20, 20, 15};
+    //     ResultSetMetaData rsmd = rs.getMetaData();
+    //     int columnCount = rsmd.getColumnCount();
+    //     for (int i=1; i <= columnCount; i++) {
+    //         String columnName = rsmd.getColumnName(i);
+    //         System.out.printf("%-20s", columnName.length() > 15 ? columnName.substring(0, 15) : columnName);
+    //     }
+    //     System.out.println();
+    //     while (rs.next()) {
+    //         for (int i = 1; i <= columnCount; i++) {
+    //             String columnValue = rs.getString(i);
+    //             String safeValue = columnValue == null ? "" : columnValue;
+    //             System.out.printf("%-20s", safeValue.length() > 15 ? safeValue.substring(0, 15) : safeValue);
+    //         }
+    //         System.out.println();
+    //     }
+    //     rs.close();
+    //     stmt.close();
+    // }
+    // public static void mostrarPrestamos(Connection conn) throws SQLException {
+    //     String sql = "SELECT * FROM prestamos";
+    //     PreparedStatement stmt = conn.prepareStatement(sql);
+    //     ResultSet rs = stmt.executeQuery();
         
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int columnCount = rsmd.getColumnCount();
-        for (int i=1; i <= columnCount; i++) {
-            String columnName = rsmd.getColumnName(i);
-            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
-        }
-        System.out.println();
-        while (rs.next()) {
-            for (int i = 1; i <= columnCount; i++) {
-                String columnValue = rs.getString(i);
-                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
-            }
-            System.out.println();
-        }
-        rs.close();
-        stmt.close();
-    }
-    public static void mostrarPenalizaciones (Connection conn) throws SQLException {
-        String sql = "SELECT * FROM penalizaciones";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        ResultSet rs = stmt.executeQuery();
+    //     ResultSetMetaData rsmd = rs.getMetaData();
+    //     int columnCount = rsmd.getColumnCount();
+    //     for (int i=1; i <= columnCount; i++) {
+    //         String columnName = rsmd.getColumnName(i);
+    //         System.out.printf("%-20s", columnName.length() > 15 ? columnName.substring(0, 15) : columnName);
+    //     }
+    //     System.out.println();
+    //     while (rs.next()) {
+    //         for (int i = 1; i <= columnCount; i++) {
+    //             String columnValue = rs.getString(i);
+    //             String safeValue = columnValue == null ? "" : columnValue;
+    //             System.out.printf("%-20s", safeValue.length() > 15 ? safeValue.substring(0, 15) : safeValue);
+    //         }
+    //         System.out.println();
+    //     }
+    //     rs.close();
+    //     stmt.close();
+    // }
+    // public static void mostrarPenalizaciones (Connection conn) throws SQLException {
+    //     String sql = "SELECT * FROM penalizaciones";
+    //     PreparedStatement stmt = conn.prepareStatement(sql);
+    //     ResultSet rs = stmt.executeQuery();
 
-        int[] columnWidths = {15, 20, 20, 20};
+    //     int[] columnWidths = {15, 20, 20, 20};
         
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int columnCount = rsmd.getColumnCount();
-        for (int i=1; i <= columnCount; i++) {
-            String columnName = rsmd.getColumnName(i);
-            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
-        }
-        System.out.println();
-        while (rs.next()) {
-            for (int i = 1; i <= columnCount; i++) {
-                String columnValue = rs.getString(i);
-                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
-            }
-            System.out.println();
-        }
-        rs.close();
-        stmt.close();
-    }
+    //     ResultSetMetaData rsmd = rs.getMetaData();
+    //     int columnCount = rsmd.getColumnCount();
+    //     for (int i=1; i <= columnCount; i++) {
+    //         String columnName = rsmd.getColumnName(i);
+    //         System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
+    //     }
+    //     System.out.println();
+    //     while (rs.next()) {
+    //         for (int i = 1; i <= columnCount; i++) {
+    //             String columnValue = rs.getString(i);
+    //             System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
+    //         }
+    //         System.out.println();
+    //     }
+    //     rs.close();
+    //     stmt.close();
+    // }
     public static void mostrarEjemplaresByIsbn(Connection conn, String isbn) throws SQLException {
         String sql = "SELECT * FROM Ejemplares WHERE isbn = ?";
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setString(1, isbn);
         ResultSet rs = stmt.executeQuery();
-
-        int[] columnWidths = {15, 20, 20, 20, 20};
         
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
         for (int i=1; i <= columnCount; i++) {
             String columnName = rsmd.getColumnName(i);
-            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
+            System.out.printf("%-20s", columnName);
         }
         System.out.println();
         while (rs.next()) {
             for (int i = 1; i <= columnCount; i++) {
                 String columnValue = rs.getString(i);
-                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
+                String safeValue = columnValue == null ? "" : columnValue;
+                System.out.printf("%-20s", safeValue.length() > 15 ? safeValue.substring(0, 15) : safeValue);
             }
             System.out.println();
         }
@@ -478,20 +472,19 @@ public class Io{
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setString(1, codUsuario);
         ResultSet rs = stmt.executeQuery();
-
-        int[] columnWidths = {15, 20, 20, 20, 15};
         
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
         for (int i=1; i <= columnCount; i++) {
             String columnName = rsmd.getColumnName(i);
-            System.out.printf("%-" + columnWidths[i-1] + "s", columnName);
+            System.out.printf("%-20s", columnName);
         }
         System.out.println();
         while (rs.next()) {
             for (int i = 1; i <= columnCount; i++) {
                 String columnValue = rs.getString(i);
-                System.out.printf("%-" + columnWidths[i-1] + "s", columnValue == null ? "NULL" : columnValue);
+                String safeValue = columnValue == null ? "" : columnValue;
+                System.out.printf("%-20s", safeValue.length() > 15 ? safeValue.substring(0, 15) : safeValue);
             }
             System.out.println();
         }
@@ -899,7 +892,7 @@ public class Io{
         }
     }
     public static void eliminarUsuario(Connection conn, Scanner scanner) throws SQLException {
-        mostrarUsuarios(conn);
+        mostrarRegistrosTabla(conn, "usuarios");
         sop("Introduce el codigo del usuario a eliminar:");
         String codUsuario = scanner.nextLine();
         String sql = "DELETE FROM usuarios WHERE cod_usuario = ?";
@@ -927,7 +920,7 @@ public class Io{
         }
     }
     public static void eliminarLibro(Connection conn, Scanner scanner) throws SQLException {
-        mostrarLibros(conn);
+        mostrarRegistrosTabla(conn, "libros");
         sop("Introduce el ISBN del libro a eliminar:");
         String isbn = scanner.nextLine();
         String sql = "DELETE FROM libros WHERE isbn = ?";
@@ -959,7 +952,7 @@ public class Io{
         }
     }
     public static void eliminarEjemplares(Connection conn, Scanner scanner) throws SQLException {
-        mostrarEjemplares(conn);
+        mostrarRegistrosTabla(conn, "ejemplares");
         String sql = "DELETE FROM ejemplares WHERE cod_ejem = ?";
         sop("Introduce el codigo del ejemplar a eliminar:");
         String codEjem = scanner.nextLine();
@@ -982,7 +975,7 @@ public class Io{
         }
     }
     public static void eliminarAutor(Connection conn, Scanner scanner) throws SQLException {
-        mostrarAutores(conn);
+        mostrarRegistrosTabla(conn, "autores");
         sop("Introduce el DNI del autor a eliminar:");
         String dni = scanner.nextLine();
         String sql = "DELETE FROM autores WHERE dni = ?";
@@ -1609,7 +1602,7 @@ public class Io{
         eliminarPenalizacion(conn, codUsuario);
         if (comprobarCantidadPrestamos(conn, codUsuario)){
             if(!algunaPenalizacion(conn, codUsuario)){
-                mostrarLibros(conn);
+                mostrarRegistrosTabla(conn, "libros");
                 sop("Introduce el isbn del libro que quiere:");
                 String isbn = scanner.nextLine();
                 if (!comprobarISBN(conn, isbn)) {
@@ -1619,7 +1612,7 @@ public class Io{
                 if (!algunaDisponibilidad(conn,isbn)) {
                     sop("No hay ejemplares disponibles.");
                     continuar(scanner);
-                    mostrarLibros(conn);
+                    mostrarRegistrosTabla(conn, "libros");
                     sop("Introduce el isbn del libro que quiere:");
                     isbn = scanner.nextLine();
                     if (!comprobarISBN(conn, isbn)) {
