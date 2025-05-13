@@ -16,19 +16,21 @@ public class Aplicacion{
         Io.sop("Estado de la conexion: " + Io.estadoConexion(conn));
         Io.clearScreen();
         do {
-            Io.sop("***************************************************************************************");
-            Io.sop("*                                Aplicacion Grupo/Talde 1            "+fechaActual +"         *");
-            Io.sop("***************************************************************************************");
-            Io.sop("\n                               === OPCIONES BASICAS ===                              ");
-            Io.sop("1. Comprobar/Establecer conexion                                2. Generar 1 Registro   ");                                                                                            
-            Io.sop("3. Mostrar Registros                                            4. Eliminar 1 Registro  ");
-            Io.sop("5. Realizar la desconexion                                      6. Buscar por Clave Primaria");
-            Io.sop("7. Gestionar Tablas (Crear/Borrar)                              8. Devolver Prestamo    ");
-            Io.sop("9. Hacer Prestamo                                               10. Mostrar Usuarios Paginando");
-            Io.sop("11. Disminuir el tamaño del CMD                                 12. Aumentar el tamaño del CMD");
-            Io.sop("13. Mostrar campos de la Tablas");
-            Io.sop("0. Salir");
-            Io.sop("\nElige una opción: ");
+            Io.sop("************************************************************************************************************************");
+            Io.sop("*                                Aplicación Grupo/Talde 1                                     " + fechaActual + "               *");
+            Io.sop("************************************************************************************************************************");
+            Io.sop("");
+            Io.sop("                                     === OPCIONES BÁSICAS ===                                     ");
+            Io.sop("");
+            Io.sop("1. Comprobar/Establecer conexión                     2. Generar 1 Registro");
+            Io.sop("3. Mostrar Registros                                 4. Eliminar 1 Registro");
+            Io.sop("5. Realizar la desconexión                           6. Buscar por Clave Primaria");
+            Io.sop("7. Gestionar Tablas (Crear/Borrar)                   8. Devolver Préstamo");
+            Io.sop("9. Hacer Préstamo                                   10. Mostrar Usuarios Paginando");
+            Io.sop("11. Disminuir el tamaño del CMD                     12. Aumentar el tamaño del CMD");
+            Io.sop("13. Mostrar campos de la Tabla");
+            Io.sop("");
+            Io.sop("Elige una opción: ");
 
             while(true){
                 if(scanner.hasNextInt()){
