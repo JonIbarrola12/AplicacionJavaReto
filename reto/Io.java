@@ -1552,7 +1552,7 @@ public class Io{
         }
         String codUsuario = getCodUsuarioByNombre(conn, scanner, nombre);
         eliminarPenalizacion(conn, codUsuario);
-        if (comprobarCantidadPrestamos(conn, null)){
+        if (comprobarCantidadPrestamos(conn, codUsuario)){
             if(!algunaPenalizacion(conn, codUsuario)){
                 mostrarLibros(conn);
                 sop("Introduce el isbn del libro que quiere:");
