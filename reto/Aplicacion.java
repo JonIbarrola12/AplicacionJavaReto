@@ -149,6 +149,7 @@ public class Aplicacion{
                     break; 
                 case 0:
                 Io.sop("Saliendo del programa... ¡Hasta luego!");
+                Io.continuar(scanner);
                     break;
                 default:
                 Io.sop("Opción no válida. Intenta de nuevo.");
