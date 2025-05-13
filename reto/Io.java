@@ -596,7 +596,11 @@ public class Io{
         String direccion="", numSS=""; 
         sop("Quieres generar un usario o un trabajador? (u/t)");
         String opcion = scanner.nextLine();
-
+        while (!opcion.equalsIgnoreCase("u") && !opcion.equalsIgnoreCase("t")) {
+            sop("Opcion no valida.");
+            sop("Quieres generar un usario o un trabajador? (u/t)");
+            opcion = scanner.nextLine();
+        }
         int codUsuario = Io.generarCodigoManual(conn, scanner);
 
         String nombre = Io.generarNombreManual(conn, scanner);
