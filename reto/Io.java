@@ -232,24 +232,24 @@ public class Io{
         }
     }
     public static void buscarPorCodPenalizacion(Connection conn, Scanner scanner) {
-        System.out.print("Introduce el ID de la penalización: ");
+        System.out.print("Introduce el Codigo de la penalización: ");
         String idPenalizacion = scanner.nextLine();
     
         try {
-            String query = "SELECT * FROM penalizaciones WHERE id = ?";
+            String query = "SELECT * FROM penalizaciones WHERE cod_pen = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, idPenalizacion);
             ResultSet rs = stmt.executeQuery();
     
             if (rs.next()) {
                 sop("Penalización encontrada:");
-                sop("ID: " + rs.getString("id"));
-                sop("Código de usuario: " + rs.getString("cod_usuario"));
-                sop("Motivo: " + rs.getString("motivo"));
-                sop("Fecha de inicio: " + rs.getDate("fecha_inicio"));
+                sop("ID: " + rs.getString("cod_pen"));
+                sop("Código de usuario: " + rs.getString("fecha_pen"));
+                sop("Motivo: " + rs.getString("dias_pen"));
+                sop("Fecha de inicio: " + rs.getDate("cod_usuarios"));
                 sop("Fecha de fin: " + rs.getDate("fecha_fin"));
             } else {
-                sop("No se encontró ninguna penalización con ese ID.");
+                sop("No se encontró ninguna penalización con ese codigo.");
             }
             rs.close();
             stmt.close();
