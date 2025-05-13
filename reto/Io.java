@@ -1280,8 +1280,7 @@ public class Io{
                             "cod_usuario INT, " +
                             "motivo VARCHAR(255), " +
                             "fecha_inicio DATE, " +
-                            "fecha_fin DATE, " +
-                            "FOREIGN KEY (cod_usuario) REFERENCES usuarios(cod_usuario))";
+                            "fecha_fin DATE)";
                 
                 Statement stmt = conn.createStatement();
                 stmt.execute(sql);
