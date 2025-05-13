@@ -1600,23 +1600,18 @@ public class Io{
         }
     }
     public static boolean comprobarCantidadPrestamos(Connection conn, String codUsuario) throws SQLException {
-        String sql = "SELECT Count(*) FROM prestamos WHERE cod_usuario = ?";
+        String sql = "SELECT * FROM prestamos WHERE cod_usuario = ? AND fecha_devolucion IS NULL";
+        int cont=0;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, codUsuario);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                int cantidad = rs.getInt(1);
-                if (cantidad >= 3) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }else {
-                sop("Error al comprobar la cantidad de prestamos.");
-                return false;
+            while (rs.next()) {
+                cont++;
             }
+        return cont < 3;
         }
     }
+    
     public static boolean algunaPenalizacion(Connection conn, String codUsuario) throws SQLException {
         String sql = "SELECT * FROM penalizaciones WHERE cod_usuarios = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
