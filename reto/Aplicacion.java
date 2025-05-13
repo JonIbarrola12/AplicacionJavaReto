@@ -5,7 +5,6 @@ import java.util.Scanner;
 public class Aplicacion{ 
     
     public static void main(String[] args) {
-        char opc;
         Scanner scanner = new Scanner(System.in);
         int opcion =-1 ;
         String fechaActual= Io.fechaActual();
