@@ -2211,6 +2211,33 @@ public class Io{
             sop("Error al mostrar reservas paginadas: " + e.getMessage());
         }
     }
+    public static void mostrarPaginados(Connection conn, Scanner scanner){
+        Io.sop("¿Qué tabla deseas paginar? (u/ l/ a/ pe/ pr/ r)");
+        String tabla = scanner.nextLine();
+
+        switch (tabla) {
+            case "u":
+                Io.mostrarUsuariosPaginados(conn, scanner);
+                break;
+            case "l":
+                Io.mostrarLibrosPaginados(conn, scanner);
+                break;
+            case "a":
+                Io.mostrarAutoresPaginados(conn, scanner);
+                break;
+            case "pe":
+                Io.mostrarPenalizacionesPaginadas(conn, scanner);
+                break;
+            case "pr":
+                Io.mostrarReservasPaginadas(conn, scanner);
+                break;
+            case "r":
+                Io.mostrarReservasPaginadas(conn, scanner);
+            default:
+                Io.sop("Opcion Incorrecta.");
+                break;
+        }
+    }
 }
 
 
