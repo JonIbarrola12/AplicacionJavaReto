@@ -857,13 +857,16 @@ public class Io{
         String sql = "DELETE FROM ejemplares WHERE cod_ejem = ?";
         sop("Introduce el codigo del ejemplar a eliminar:");
         String codEjem = scanner.nextLine();
+        String isbn = getISBNByCodEjem(conn, codEjem);
         if (!comprobarEjemplarEnPrestamo(conn, codEjem)){
-            if (!comprobarCantidadEjemplares(conn, codEjem)){
+            if (!comprobarCantidadEjemplares(conn, isbn)){
                 try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                     stmt.setString(1, codEjem);
                     int rowsAffected = stmt.executeUpdate();
                     if (rowsAffected > 0) {
                         sop("Ejemplar eliminado correctamente.");
+                        int copias = getNCopiasExistentes(conn, isbn);
+                        actualizarLibro(conn, isbn, copias);
                     } else {
                         sop("No se encontro ningun ejemplar con ese codigo.");
                     }
@@ -890,11 +893,25 @@ public class Io{
             }
         }
     }
-    public static boolean comprobarCantidadEjemplares(Connection conn, String codEjem){
-        String sql = "SELECT * FROM ejemplares WHERE cod_ejem = ?";
+    public static String getISBNByCodEjem(Connection conn,String codEjem){
+        String sql = "SELECT isbn FROM ejemplares WHERE cod_ejem = ?";
+        String respuesta = "";
+        try(PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setString(1, codEjem);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                respuesta = rs.getString(1);
+            }
+        }catch(SQLException e){
+            sop("Error al recibir el isbn");
+        }
+        return respuesta;
+    }
+    public static boolean comprobarCantidadEjemplares(Connection conn, String isbn){
+        String sql = "SELECT * FROM ejemplares WHERE isbn = ?";
         int cont=0;
         try (PreparedStatement stmt = conn.prepareStatement(sql)){
-            stmt.setString(1, codEjem);
+            stmt.setString(1, isbn);
             ResultSet rs = stmt.executeQuery();
             while(rs.next()){
                 cont++;
