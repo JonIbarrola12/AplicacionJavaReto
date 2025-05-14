@@ -73,15 +73,13 @@ public class Io{
         }
     }
    public static int getTamanioFuenteCmd() {
-	   //import java.io.InputStreamReader;
         try {
             Process process = Runtime.getRuntime().exec(new String[]{"cmd", "/c", "reg query HKCU\\Console /v FontSize"});
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.contains("FontSize")) {
-                   // String[] parts = line.trim().split("\s+");
-                   int fontSize=10;//  = Integer.parseInt(parts[parts.length - 1], 16) / 65536;
+                   int fontSize=10;
                     return fontSize;
                 }
             }
