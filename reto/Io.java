@@ -44,6 +44,25 @@ public class Io{
             sop("error al cerrar la conexion");
         }
     }
+    public static void mostrarMenu(){
+        String fechaActual= fechaActual();
+        Io.sop("************************************************************************************************************************");
+        Io.sop("*                                Aplicación Grupo/Talde 1                                     " + fechaActual + "               *");
+        Io.sop("************************************************************************************************************************");
+        Io.sop("");
+        Io.sop("                                     === OPCIONES BÁSICAS ===                                     ");
+        Io.sop("");
+        Io.sop("1. Comprobar/Establecer conexión                     2. Generar 1 Registro");
+        Io.sop("3. Mostrar Registros                                 4. Eliminar 1 Registro");
+        Io.sop("5. Realizar la desconexión                           6. Buscar por Clave Primaria");
+        Io.sop("7. Gestionar Tablas (Crear/Borrar)                   8. Devolver Préstamo");
+        Io.sop("9. Hacer Préstamo                                   10. Mostrar Usuarios Paginando");
+        Io.sop("11. Disminuir el tamaño del CMD                     12. Aumentar el tamaño del CMD");
+        Io.sop("13. Mostrar campos de la Tabla");
+        Io.sop("0. Salir");
+        Io.sop("");
+        Io.sop("Elige una opción: ");
+    }
     public static void aumentarFuenteCmd(int tamanioFuente) {
         try {
             // Cambiar tamaño de la fuente (requiere acceso a configuración del registro o herramientas externas)

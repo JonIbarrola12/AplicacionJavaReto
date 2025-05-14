@@ -7,7 +7,6 @@ public class Aplicacion{
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int opcion =-1 ;
-        String fechaActual= Io.fechaActual();
         Connection conn= null;
         String url = "jdbc:mysql://127.0.0.1:3306/BibliotecaMuskiz";
 	    String usuario = "alumno1";
@@ -16,28 +15,15 @@ public class Aplicacion{
         Io.sop("Estado de la conexion: " + Io.estadoConexion(conn));
         Io.clearScreen();
         do {
-            Io.sop("************************************************************************************************************************");
-            Io.sop("*                                Aplicación Grupo/Talde 1                                     " + fechaActual + "               *");
-            Io.sop("************************************************************************************************************************");
-            Io.sop("");
-            Io.sop("                                     === OPCIONES BÁSICAS ===                                     ");
-            Io.sop("");
-            Io.sop("1. Comprobar/Establecer conexión                     2. Generar 1 Registro");
-            Io.sop("3. Mostrar Registros                                 4. Eliminar 1 Registro");
-            Io.sop("5. Realizar la desconexión                           6. Buscar por Clave Primaria");
-            Io.sop("7. Gestionar Tablas (Crear/Borrar)                   8. Devolver Préstamo");
-            Io.sop("9. Hacer Préstamo                                   10. Mostrar Usuarios Paginando");
-            Io.sop("11. Disminuir el tamaño del CMD                     12. Aumentar el tamaño del CMD");
-            Io.sop("13. Mostrar campos de la Tabla");
-            Io.sop("");
-            Io.sop("Elige una opción: ");
-
+            Io.mostrarMenu();
             while(true){
                 if(scanner.hasNextInt()){
                     opcion = scanner.nextInt();
                     scanner.nextLine();
                     break;
                 }else{
+                    Io.clearScreen();
+                    Io.mostrarMenu();
                     Io.sop("No se introdujo un numero. Preube de nuevo");
                     scanner.nextLine();
                 }
@@ -154,6 +140,7 @@ public class Aplicacion{
                     break;
                 default:
                 Io.sop("Opción no válida. Intenta de nuevo.");
+                break;
             }
             Io.clearScreen();
         } while (opcion != 0);
