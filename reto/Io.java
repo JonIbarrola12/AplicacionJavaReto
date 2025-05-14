@@ -1709,28 +1709,44 @@ public class Io{
             nombre = scanner.nextLine();
             codUsuario = getCodUsuarioByNombre(conn, scanner, nombre);
         }
-        mostrarPrestamosByCodUsuario(conn, codUsuario);
-        sop("Introduce el codigo del prestamo:");
-        int codPrestamo = scanner.nextInt();
-        scanner.nextLine();
-        while (!comprobarPrestamo(conn, codPrestamo, codUsuario)){
-            sop("El prestamo no existe. Introduce otro codigo:");
-            codPrestamo = scanner.nextInt();
+        if (algunPrestamo(conn,codUsuario)){
+            mostrarPrestamosByCodUsuario(conn, codUsuario);
+            sop("Introduce el codigo del prestamo:");
+            int codPrestamo = scanner.nextInt();
             scanner.nextLine();
+            while (!comprobarPrestamo(conn, codPrestamo, codUsuario)){
+                sop("El prestamo no existe. Introduce otro codigo:");
+                codPrestamo = scanner.nextInt();
+                scanner.nextLine();
+            }
+            LocalDate hoy = LocalDate.now();
+            Date fechaDevolucion = Date.valueOf(hoy);
+            actualizarFechaPrestamo(conn, codPrestamo, codUsuario, fechaDevolucion);
+            Date fechaEntrega = getFechaEntrega(conn, codPrestamo);
+            int diasPrestado = diferenciaFechas(fechaEntrega, fechaDevolucion);
+            if (diasPrestado > 30) {
+                int diasDePenalizacion = (diasPrestado - 30) * 2;;
+                generarPenalizaciones(conn, scanner, codUsuario, diasDePenalizacion, fechaEntrega);
+                actualizarEjemplarDevolucion(conn, codPrestamo);
+                sop("El libro ha sido devuelto, pero has recibido una penalizacion de " + diasDePenalizacion + " dias.");
+            } else {
+                actualizarEjemplarDevolucion(conn, codPrestamo);
+                sop("El libro ha sido devuelto a tiempo.");
+            }
+        }else{
+            Sop("No tiene prestamos activos");
+            return;
         }
-        LocalDate hoy = LocalDate.now();
-        Date fechaDevolucion = Date.valueOf(hoy);
-        actualizarFechaPrestamo(conn, codPrestamo, codUsuario, fechaDevolucion);
-        Date fechaEntrega = getFechaEntrega(conn, codPrestamo);
-        int diasPrestado = diferenciaFechas(fechaEntrega, fechaDevolucion);
-        if (diasPrestado > 30) {
-            int diasDePenalizacion = (diasPrestado - 30) * 2;;
-            generarPenalizaciones(conn, scanner, codUsuario, diasDePenalizacion, fechaEntrega);
-            actualizarEjemplarDevolucion(conn, codPrestamo);
-            sop("El libro ha sido devuelto, pero has recibido una penalizacion de " + diasDePenalizacion + " dias.");
-        } else {
-            actualizarEjemplarDevolucion(conn, codPrestamo);
-            sop("El libro ha sido devuelto a tiempo.");
+    }
+    public static boolean algunPrestamo(Connection conn, String codUsuario){
+        String sql ="SELECT * FROM prestamos WHERE cod_usuario = ?";
+        try(PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setString(1, codUsuario);
+            ResultSet rs= stmt.executeQuery();
+            return rs.next();
+        }catch(SQLException e){
+            sop("Error al comprobar si habia algun prestamo");
+            return true;
         }
     }
     public static boolean comprobarPrestamo(Connection conn, int codPrestamo, String codUsuario) throws SQLException {
