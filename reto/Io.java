@@ -1785,32 +1785,32 @@ public class Io{
         LocalDate localDate2 = fecha2.toLocalDate();
         return (int) ChronoUnit.DAYS.between(localDate1, localDate2);
     }
-    public static void mostrarTablas(Connection conn, Scanner scanner) {
+    // public static void mostrarTablas(Connection conn, Scanner scanner) {
         
-        sop("De que tabla quieres ver los Campos? (u/ l/ a/ e/ pr/ pe)");
-        String opcion=scanner.nextLine();
-        switch (opcion) {
-            case "u":
-                mostrarUsuariosPaginados(conn, scanner);
-                break;
-            case "l":
-                mostrarLibrosPaginados(conn, scanner);
-                break;
-            case "a":
-                mostrarAutoresPaginados(conn, scanner);
-                break;
-            case "e":
-                mostrarPenalizacionesPaginadas(conn, scanner);
-                break;
-            case "pr":
-                mostrarReservasPaginadas(conn, scanner);
-                break;
-            default:
-                sop("opcion incorrecta");
-                break;
-        }
+    //     sop("De que tabla quieres ver los Campos? (u/ l/ a/ e/ pr/ pe)");
+    //     String opcion=scanner.nextLine();
+    //     switch (opcion) {
+    //         case "u":
+    //             mostrarUsuariosPaginados(conn, scanner);
+    //             break;
+    //         case "l":
+    //             mostrarLibrosPaginados(conn, scanner);
+    //             break;
+    //         case "a":
+    //             mostrarAutoresPaginados(conn, scanner);
+    //             break;
+    //         case "e":
+    //             mostrarPenalizacionesPaginadas(conn, scanner);
+    //             break;
+    //         case "pr":
+    //             mostrarReservasPaginadas(conn, scanner);
+    //             break;
+    //         default:
+    //             sop("opcion incorrecta");
+    //             break;
+    //     }
 
-    }
+    // }
     public static void mostrarUsuariosPaginados(Connection conn, Scanner scanner){
         int pagina = 0;
         int tamanioPagina = 10;
@@ -2133,50 +2133,51 @@ public class Io{
             sop("Error al mostrar penzalizaciones paginadas: " + e.getMessage());
         }
     }
-    public static void mostrarReservasPaginadas(Connection conn, Scanner scanner) {
+    public static void mostrarPrestamosPaginadas(Connection conn, Scanner scanner) {
         int pagina = 0;
         int tamanioPagina = 10;
-        int totalReservas = 0;
+        int totalPrestamos = 0;
     
         try {
-            String conteo = "SELECT COUNT(*) FROM reservas";
+            String conteo = "SELECT COUNT(*) FROM prestamos";
             PreparedStatement stmtConteo = conn.prepareStatement(conteo);
             ResultSet rsConteo = stmtConteo.executeQuery();
     
             if (rsConteo.next()) {
-                totalReservas = rsConteo.getInt(1);
+                totalPrestamos = rsConteo.getInt(1);
             }
     
             rsConteo.close();
             stmtConteo.close();
     
-            if (totalReservas == 0) {
+            if (totalPrestamos == 0) {
                 sop("No hay reservas en la base de datos");
                 return;
             }
     
             char opcion = ' ';
-            int totalPaginas = (totalReservas + tamanioPagina - 1) / tamanioPagina;
+            int totalPaginas = (totalPrestamos + tamanioPagina - 1) / tamanioPagina;
     
             do {
                 Io.clearScreen();
-                sop("Mostrando reservas - Página " + (pagina + 1) + " de " + totalPaginas + "\n");
+                sop("Mostrando prestamos - Página " + (pagina + 1) + " de " + totalPaginas + "\n");
     
-                String sql = "SELECT ID, COD_USUARIO, ISBN, FECHA_RESERVA FROM reservas LIMIT ? OFFSET ?";
+                String sql = "SELECT * FROM prestamos LIMIT ? OFFSET ?";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setInt(1, tamanioPagina);
                 stmt.setInt(2, pagina * tamanioPagina);
                 ResultSet rs = stmt.executeQuery();
     
-                System.out.printf("%-5s%-15s%-20s%-15s\n", "ID", "COD_USUARIO", "ISBN", "FECHA_RESERVA");
+                System.out.printf("%-5s%-15s%-15s%-15s%-10s\n", "cod_prest", "fecha_prestamo", "fecha_entrega", "fecha_devolucion","cod_usuario");
                 System.out.println("----------------------------------------------------------------------------------------------------------");
     
                 while (rs.next()) {
-                System.out.printf("%-5d%-15s%-20s%-15s\n",
-                    rs.getInt("ID"),
-                    rs.getString("COD_USUARIO"),
-                    rs.getString("ISBN"),
-                    rs.getDate("FECHA_RESERVA")
+                System.out.printf("%-5d%-15s%-20s%-15s%-10s\n",
+                    rs.getInt("cod_prest"),
+                    rs.getDate("fecha_prestamo"),
+                    rs.getDate("fecha_entrega"),
+                    rs.getDate("fecha_devolucion"),
+                    rs.getString("cod_usuario")
                     );
                 }
     
@@ -2208,11 +2209,11 @@ public class Io{
             } while (opcion != 'q');
     
         } catch (SQLException e) {
-            sop("Error al mostrar reservas paginadas: " + e.getMessage());
+            sop("Error al mostrar prestamos paginadas: " + e.getMessage());
         }
     }
     public static void mostrarPaginados(Connection conn, Scanner scanner){
-        Io.sop("¿Qué tabla deseas paginar? (u/ l/ a/ pe/ pr/ r)");
+        Io.sop("¿Qué tabla deseas paginar? (u (usuarios)/ l(libros)/ a(autores)/ pe(penalizaciones)/ pr(prestamos))");
         String tabla = scanner.nextLine();
 
         switch (tabla) {
@@ -2229,10 +2230,9 @@ public class Io{
                 Io.mostrarPenalizacionesPaginadas(conn, scanner);
                 break;
             case "pr":
-                Io.mostrarReservasPaginadas(conn, scanner);
+                Io.mostrarPrestamosPaginadas(conn, scanner);
                 break;
-            case "r":
-                Io.mostrarReservasPaginadas(conn, scanner);
+
             default:
                 Io.sop("Opcion Incorrecta.");
                 break;
