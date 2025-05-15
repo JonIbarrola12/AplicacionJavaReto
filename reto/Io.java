@@ -567,7 +567,7 @@ public class Io{
         String apellido = generarApellidoAutor(scanner);
         String dni = getDNIByNombreAndApellido(conn, scanner, autor, apellido);
         while (dni == null){
-            sop("No se ha encontrado el autor, ¿Qieres crear uno nuevo o volver a intentarlo? (crear/repetir):");
+            sop("No se ha encontrado el autor, ¿Quieres crear uno nuevo o volver a intentarlo? (crear/repetir):");
             respuesta = scanner.nextLine();
             if (respuesta.equalsIgnoreCase("repetir")) {
                 autor = generarNombreAutor(scanner);
