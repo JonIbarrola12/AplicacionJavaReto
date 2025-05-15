@@ -32,7 +32,7 @@ public class Io{
         try {
             conn = DriverManager.getConnection(url, user, pass);
         } catch (SQLException e) {
-            e.printStackTrace();
+            
         }
         return (conn);
     }
