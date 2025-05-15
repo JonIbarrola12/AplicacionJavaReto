@@ -38,7 +38,7 @@ public class Aplicacion{
                     try {
                         Io.anadirRegistro(conn, scanner);
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        Io.sop("Error al añadir el registro");
                     }
                     Io.continuar(scanner);
                     break;
@@ -46,7 +46,7 @@ public class Aplicacion{
                     try {
                         Io.mostrarRegistros(conn, scanner);
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        Io.sop("Error al mostrar los registros");
                     }
                     Io.continuar(scanner);
                     break;
@@ -54,7 +54,7 @@ public class Aplicacion{
                     try {
                         Io.eliminarRegistro(conn, scanner);
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        Io.sop("Error al eliminar el registro");
                     }
                     Io.continuar(scanner);
                     break;
@@ -74,7 +74,7 @@ public class Aplicacion{
                     try {
                         Io.devolverPrestamo(conn, scanner);
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                         Io.sop("Error al devolver el prestamo");
                     }
                     Io.continuar(scanner);
                     break;
@@ -83,7 +83,7 @@ public class Aplicacion{
                         Io.hacerPrestamo(conn, scanner);
                     }
                     catch (SQLException e) {
-                        e.printStackTrace();
+                        Io.sop("Error al hacer el prestamo");
                     }
                     Io.continuar(scanner);
                     break;

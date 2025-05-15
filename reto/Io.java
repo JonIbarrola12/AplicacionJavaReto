@@ -32,16 +32,17 @@ public class Io{
         try {
             conn = DriverManager.getConnection(url, user, pass);
         } catch (SQLException e) {
-            
+
         }
         return (conn);
     }
     public static void cerrarConexion(Connection conn){
         try {
                 conn.close();
-                sop("exitosa");
+                sop("Desconexion exitosa");
+                sop("Estado de la conexion "+ estadoConexion(conn));
         } catch (SQLException e) {
-            sop("error al cerrar la conexion");
+            sop("Error al cerrar la conexion");
         }
     }
     public static void mostrarMenu(){
@@ -52,7 +53,7 @@ public class Io{
         Io.sop("");
         Io.sop("                                     === OPCIONES BÁSICAS ===                                     ");
         Io.sop("");
-        Io.sop("1. Comprobar/Establecer conexión                     2. Generar 1 Registro");
+        Io.sop("1. Comprobar/Establecer conexión                     2. Añadir 1 Registro");
         Io.sop("3. Mostrar Registros                                 4. Eliminar 1 Registro");
         Io.sop("5. Realizar la desconexión                           6. Buscar por Clave Primaria");
         Io.sop("7. Gestionar Tablas (Crear/Borrar)                   8. Devolver Préstamo");
@@ -1739,7 +1740,7 @@ public class Io{
         }
     }
     public static boolean algunPrestamo(Connection conn, String codUsuario){
-        String sql ="SELECT * FROM prestamos WHERE cod_usuario = ?";
+        String sql ="SELECT * FROM prestamos WHERE cod_usuario = ? AND fecha_devolucion IS NULL";
         try(PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setString(1, codUsuario);
             ResultSet rs= stmt.executeQuery();
