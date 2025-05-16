@@ -40,7 +40,6 @@ public class Io{
         try {
                 conn.close();
                 sop("Desconexion exitosa");
-                sop("Estado de la conexion "+ estadoConexion(conn));
         } catch (SQLException e) {
             sop("Error al cerrar la conexion");
         }
