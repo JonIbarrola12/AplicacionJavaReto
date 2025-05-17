@@ -40,6 +40,7 @@ public class Io{
         try {
                 conn.close();
                 sop("Desconexion exitosa");
+                sop("Estado de la conexion "+ estadoConexion(conn));
         } catch (SQLException e) {
             sop("Error al cerrar la conexion");
         }
@@ -490,28 +491,32 @@ public class Io{
         String direccion="", numSS=""; 
         sop("Quieres generar un usario o un trabajador? (u/t)");
         String opcion = scanner.nextLine();
+        //Comprobación para saber si la opcion introducida esta entre las opciones a elegir
         while (!opcion.equalsIgnoreCase("u") && !opcion.equalsIgnoreCase("t")) {
             sop("Opcion no valida.");
             sop("Quieres generar un usario o un trabajador? (u/t)");
             opcion = scanner.nextLine();
         }
+        //Llama a la función generarCodigoManual he introduce el valor devuelto en la variable codUsuario
         int codUsuario = Io.generarCodigoManual(conn, scanner);
-
+        //Llama a la función generarNombreManual he introduce el valor devuelto en la variable nombre
         String nombre = Io.generarNombreManual(conn, scanner);
-
+        //Llama a la función generarContrasenaManual he introduce el valor devuelto en la variable contrasena
         String contrasena = Io.generarContrasenaManual(scanner);
-
+        //Llama a la función generarTelefonoManual he introduce el valor devuelto en la variable telefono
         String telefono = Io.generarTelefonoManual(conn, scanner);
 
         sop("Quieres introducir una direccion? (s/n)");
         String respuesta = scanner.nextLine();
         if(respuesta.equalsIgnoreCase("s")) { 
+            //Llama a la función generarDireccionManual he introduce el valor devuelto en la variable direccion
             direccion = Io.generarDireccionManual(scanner);
         }
-
+        //Llama a la función generarCorreoManual he introduce el valor devuelto en la variable correo
         String correo = Io.generarCorreoManual(conn, scanner);
 
         if (opcion.equalsIgnoreCase("t")) {
+            //Llama a la función generarNumSSManual he introduce el valor devuelto en la variable numSS
             numSS= Io.generarNumSSManual(conn, scanner);
         }
         String sql = "INSERT INTO usuarios (cod_usuario, nombre_usuario, contrasena, telefono, direccion, correo_elec, num_ss) VALUES (?, ?, ?, ?, ?, ?, ?)";
