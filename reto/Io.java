@@ -1550,7 +1550,7 @@ public class Io{
                     sop("El ISBN no existe. Introduce otro ISBN:");
                     isbn = scanner.nextLine();
                 }
-                if (!algunaDisponibilidad(conn,isbn)) {
+                while (!algunaDisponibilidad(conn,isbn)) {
                     sop("No hay ejemplares disponibles.");
                     continuar(scanner);
                     mostrarRegistrosTabla(conn, "libros");
