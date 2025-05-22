@@ -67,20 +67,20 @@ public class Io{
     public static void aumentarFuenteCmd(int tamanioFuente) {
         try {
             // Cambiar tamaño de la fuente (requiere acceso a configuración del registro o herramientas externas)
-            String fontCommand = "reg add HKCU\\Console /v FontSize /t REG_DWORD /d "+ (tamanioFuente * 65536) + " /f";
-            Runtime.getRuntime().exec(new String[]{"cmd", "/c", fontCommand});
+            String fontCommand = "reg add HKCU\\Console /v FontSize /t REG_DWORD /d "+ (tamanioFuente * 65536) + " /f";// HKCU\Console\FontSize almacena el tamaño de fuente de la consola
+            Runtime.getRuntime().exec(new String[]{"cmd", "/c", fontCommand}); 
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace();// Imprime el error si ocurre una excepción al ejecutar el comando
         }
     }
    public static int getTamanioFuenteCmd() {
         try {
             Process process = Runtime.getRuntime().exec(new String[]{"cmd", "/c", "reg query HKCU\\Console /v FontSize"});
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));// Lee la salida del comando
             String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.contains("FontSize")) {
-                   int fontSize=10;
+            while ((line = reader.readLine()) != null) {// Recorre cada línea de la salida del comando
+                if (line.contains("FontSize")) {// Recorre cada línea de la salida del comando
+                   int fontSize=10;// Valor de ejemplo fijo (no está procesando el valor real)
                     return fontSize;
                 }
             }
