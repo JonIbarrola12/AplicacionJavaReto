@@ -395,7 +395,7 @@ public class Io{
         stmt.close();
     }
     public static void anadirRegistro (Connection conn, Scanner scanner) throws SQLException { //menu para elegir tabla
-        sop("Que tabla quieres añadir? (usuarios (u)/ libros (l)/ autores (a)/ ejemplares (e))");
+        sop("En que tabla quieres añadir un registro? (usuarios (u)/ libros (l)/ autores (a)/ ejemplares (e))");
         String opcion=scanner.nextLine();
         switch (opcion) {
             case "u":
