@@ -431,6 +431,7 @@ public class Io{
 
     }
     public static void anadirUsuario(Connection conn, Scanner scanner) throws SQLException {
+        //Metodo que pregunta si se quiere añadir un usuario automaticamente o manualmente y ejecuta el metodo correspondiente.
         sop("Quieres generar un usuario automaticamente o manualmente? (a/m)");
         String opcion = scanner.nextLine();
         if (opcion.equalsIgnoreCase("a")) {
@@ -442,7 +443,9 @@ public class Io{
         }
     }
     public static void generarUsuarioAutomaticamente(Connection conn) throws SQLException {
+        //Sentencia sql para hacer un insert en la tabla usuarios
         String sql = "INSERT INTO usuarios (cod_usuario, nombre_usuario, contrasena, telefono, direccion, correo_elec, num_ss) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        //Se generan valores aleatorios en las siguientes variables mediante los metodos get de la clase Azar
         String nombre = Azar.getNombre();
         int codUsuario = (int) (Math.random()*100)+1;
         String telefono = Azar.getTelefono();
@@ -466,6 +469,7 @@ public class Io{
             numSS = Azar.getNumSS();
             Azar.comprobarCont();
         }
+        //Se prepara para ejecutar la sentencia sql y se introducen los valores corresponientes mediante los set
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, codUsuario);
             stmt.setString(2, nombre);
@@ -482,6 +486,7 @@ public class Io{
             }else {
                 stmt.setNull(7, java.sql.Types.VARCHAR);
             }
+            //Ejecuta la sentencia sql en la base de datos
             stmt.executeUpdate();
         }
         sop(nombre + " se ha generado correctamente.");
@@ -495,6 +500,7 @@ public class Io{
             sop("Quieres generar un usario o un trabajador? (u/t)");
             opcion = scanner.nextLine();
         }
+
         int codUsuario = Io.generarCodigoManual(conn, scanner);
 
         String nombre = Io.generarNombreManual(conn, scanner);
@@ -502,7 +508,7 @@ public class Io{
         String contrasena = Io.generarContrasenaManual(scanner);
 
         String telefono = Io.generarTelefonoManual(conn, scanner);
-
+        
         sop("Quieres introducir una direccion? (s/n)");
         String respuesta = scanner.nextLine();
         if(respuesta.equalsIgnoreCase("s")) { 
