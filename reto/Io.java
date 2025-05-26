@@ -40,6 +40,7 @@ public class Io{
         try {
                 conn.close();
                 sop("Desconexion exitosa");
+                sop("Estado de la conexion "+ estadoConexion(conn));
         } catch (SQLException e) {
             sop("Error al cerrar la conexion");
         }
@@ -66,20 +67,20 @@ public class Io{
     public static void aumentarFuenteCmd(int tamanioFuente) {
         try {
             // Cambiar tamaño de la fuente (requiere acceso a configuración del registro o herramientas externas)
-            String fontCommand = "reg add HKCU\\Console /v FontSize /t REG_DWORD /d "+ (tamanioFuente * 65536) + " /f";
-            Runtime.getRuntime().exec(new String[]{"cmd", "/c", fontCommand});
+            String fontCommand = "reg add HKCU\\Console /v FontSize /t REG_DWORD /d "+ (tamanioFuente * 65536) + " /f";// HKCU\Console\FontSize almacena el tamaño de fuente de la consola
+            Runtime.getRuntime().exec(new String[]{"cmd", "/c", fontCommand}); 
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace();// Imprime el error si ocurre una excepción al ejecutar el comando
         }
     }
    public static int getTamanioFuenteCmd() {
         try {
             Process process = Runtime.getRuntime().exec(new String[]{"cmd", "/c", "reg query HKCU\\Console /v FontSize"});
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));// Lee la salida del comando
             String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.contains("FontSize")) {
-                   int fontSize=10;
+            while ((line = reader.readLine()) != null) {// Recorre cada línea de la salida del comando
+                if (line.contains("FontSize")) {// Recorre cada línea de la salida del comando
+                   int fontSize=10;// Valor de ejemplo fijo (no está procesando el valor real)
                     return fontSize;
                 }
             }
@@ -90,9 +91,9 @@ public class Io{
     }
     public static void buscarPorClavePrimaria(Connection conn, Scanner scanner) {
         
-        sop("En que tabla buscas el registro por clave primaria? (u/ l/ a/ e/ pr/ pe)");
+        sop("En que tabla buscas el registro por clave primaria? (usuarios (u)/ libros (l)/ autores (a)/ ejemplares (e)/ prestamos (pr)/ penalicaciones (pe))");
         String opcion=scanner.nextLine();
-        switch (opcion) {
+        switch (opcion) { //menu para elegir la tabla
             case "u":
                 buscarPorCodUsuario(conn, scanner);
                 break;
@@ -117,18 +118,18 @@ public class Io{
         }
 
     }
-    public static void buscarPorCodUsuario(Connection conn, Scanner scanner) {
+    public static void buscarPorCodUsuario(Connection conn, Scanner scanner) { //metodo
         System.out.print("Introduce el codigo del usuario:");
         String codUsuario = scanner.nextLine();
 
         try {
             String query = "SELECT * FROM usuarios WHERE cod_usuario = ?";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, codUsuario);
-            ResultSet rs = stmt.executeQuery();
+            PreparedStatement stmt = conn.prepareStatement(query);// prepara la sentencia SQL con la conexión a la base de datos
+            stmt.setString(1, codUsuario);// asigna el valor del codusuario al primer parametro de la consulta
+            ResultSet rs = stmt.executeQuery();// Ejecuta la consulta y guarda el resultado en un ResultSet
 
-            if (rs.next()) {
-                sop("Usuario encontrado:");
+            if (rs.next()) { // Comprueba si la consulta tiene al menos un resultado
+                sop("Usuario encontrado:"); // Si hay resultados, se muestra 
                 sop("Codigo: " + rs.getString("cod_usuario"));
                 sop("Nombre: " + rs.getString("nombre_usuario"));
                 sop("Contraseña: " + rs.getString("contrasena"));
@@ -141,7 +142,7 @@ public class Io{
             }
             rs.close();
             stmt.close();
-        } catch (Exception e) {
+        } catch (Exception e) { // Si ocurre un error salta la excepcion 
             sop("Error al buscar el usuario: " + e.getMessage());
         }
     }
@@ -294,8 +295,8 @@ public class Io{
         int anio = cal.get(Calendar.YEAR);
         return (dia +"/" + mes + "/" + anio);
     }
-    public static void mostrarRegistros(Connection conn, Scanner scanner) throws SQLException {
-        sop("Que tabla quieres mostrar? (u/ l/ a/ e /pr /pe )");
+    public static void mostrarRegistros(Connection conn, Scanner scanner) throws SQLException { //menu para elgir la tabla
+        sop("Que tabla quieres mostrar? (usuarios (u)/ libros (l)/ autores (a)/ ejemplares (e)/ prestamos (pr)/ penalicaciones (pe))");
         String opcion = scanner.nextLine();
         switch (opcion) {
             case "u":
@@ -322,18 +323,19 @@ public class Io{
         }
     }
     public static void mostrarRegistrosTabla(Connection conn, String tabla) throws SQLException {
-        String sql = "SELECT * FROM "+ tabla;
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        ResultSet rs = stmt.executeQuery();
+        String sql = "SELECT * FROM "+ tabla; //consulta SQL para seleccionar todos los registros de la tabla
+        PreparedStatement stmt = conn.prepareStatement(sql); // prepara la sentencia SQL con la conexion
+        ResultSet rs = stmt.executeQuery(); // ejecuta la consulta y guarda el resultado en un resultset
         
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int columnCount = rsmd.getColumnCount();
-        for (int i=1; i <= columnCount; i++) {
-            String columnName = rsmd.getColumnName(i);
+        ResultSetMetaData rsmd = rs.getMetaData(); // para saber cuántas columnas hay y sus nombres
+        int columnCount = rsmd.getColumnCount(); // se queda con la cantidad de columnas
+        for (int i=1; i <= columnCount; i++) { // imprime los nombres de las columnas
+            String columnName = rsmd.getColumnName(i);//nombre de la columna actual
+            //el nombre de la columna con un ancho fijo de 20 caracteres y truncando el texto si es mayor a 15 caracteres
             System.out.printf("%-20s", columnName.length() > 15 ? columnName.substring(0, 15)+"..." : columnName);
         }
         System.out.println();
-        while (rs.next()) {
+        while (rs.next()) { //  recorrer todas las filas devueltas por la consulta SQL y muestra los valores
             for (int i = 1; i <= columnCount; i++) {
                 String columnValue = rs.getString(i);
                 String safeValue = columnValue == null ? "" : columnValue;
@@ -392,8 +394,8 @@ public class Io{
         rs.close();
         stmt.close();
     }
-    public static void anadirRegistro (Connection conn, Scanner scanner) throws SQLException {
-        sop("Que tabla quieres añadir? (u/ l/ a/ e)");
+    public static void anadirRegistro (Connection conn, Scanner scanner) throws SQLException { //menu para elegir tabla
+        sop("En que tabla quieres añadir un registro? (usuarios (u)/ libros (l)/ autores (a)/ ejemplares (e))");
         String opcion=scanner.nextLine();
         switch (opcion) {
             case "u":
@@ -495,29 +497,31 @@ public class Io{
         String direccion="", numSS=""; 
         sop("Quieres generar un usario o un trabajador? (u/t)");
         String opcion = scanner.nextLine();
+        //Comprobación para saber si la opcion introducida esta entre las opciones a elegir
         while (!opcion.equalsIgnoreCase("u") && !opcion.equalsIgnoreCase("t")) {
             sop("Opcion no valida.");
             sop("Quieres generar un usario o un trabajador? (u/t)");
             opcion = scanner.nextLine();
         }
-
         int codUsuario = Io.generarCodigoManual(conn, scanner);
-
+        //Llama a la función generarNombreManual he introduce el valor devuelto en la variable nombre
         String nombre = Io.generarNombreManual(conn, scanner);
-
+        //Llama a la función generarContrasenaManual he introduce el valor devuelto en la variable contrasena
         String contrasena = Io.generarContrasenaManual(scanner);
-
+        //Llama a la función generarTelefonoManual he introduce el valor devuelto en la variable telefono
         String telefono = Io.generarTelefonoManual(conn, scanner);
         
         sop("Quieres introducir una direccion? (s/n)");
         String respuesta = scanner.nextLine();
         if(respuesta.equalsIgnoreCase("s")) { 
+            //Llama a la función generarDireccionManual he introduce el valor devuelto en la variable direccion
             direccion = Io.generarDireccionManual(scanner);
         }
-
+        //Llama a la función generarCorreoManual he introduce el valor devuelto en la variable correo
         String correo = Io.generarCorreoManual(conn, scanner);
 
         if (opcion.equalsIgnoreCase("t")) {
+            //Llama a la función generarNumSSManual he introduce el valor devuelto en la variable numSS
             numSS= Io.generarNumSSManual(conn, scanner);
         }
         String sql = "INSERT INTO usuarios (cod_usuario, nombre_usuario, contrasena, telefono, direccion, correo_elec, num_ss) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -794,8 +798,8 @@ public class Io{
         }
         return numEjemplares;
     }
-    public static void eliminarRegistro(Connection conn, Scanner scanner) throws SQLException {
-        sop("De que tabla quieres eliminar un registro? (u/ l/ a/ e)");
+    public static void eliminarRegistro(Connection conn, Scanner scanner) throws SQLException { //menu para elegir tabla
+        sop("De que tabla quieres eliminar un registro? (usuarios (u)/ libros (l)/ autores (a)/ ejemplares (e))");
         String opcion = scanner.nextLine();
         switch (opcion) {
             case "u":
@@ -816,13 +820,13 @@ public class Io{
         }
     }
     public static void eliminarUsuario(Connection conn, Scanner scanner) throws SQLException {
-        mostrarRegistrosTabla(conn, "usuarios");
+        mostrarRegistrosTabla(conn, "usuarios");  // muestra en pantalla todos los registros de la tabla usuarios
         sop("Introduce el codigo del usuario a eliminar:");
         String codUsuario = scanner.nextLine();
-        String sql = "DELETE FROM usuarios WHERE cod_usuario = ?";
+        String sql = "DELETE FROM usuarios WHERE cod_usuario = ?"; // consulta SQL para eliminar un usuario
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, codUsuario);
-            int rowsAffected = stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate(); // ejecuta la sentencia delete y devuelve el número de filas afectadas
             if (rowsAffected > 0) {
                 sop("Usuario eliminado correctamente.");
             } else {
@@ -1040,7 +1044,7 @@ public class Io{
     }
     public static void crearTablas(Connection conn, Scanner scanner) {
         
-        sop("Que tabla quieres crear? (u/ l/ a/ e/ pr/ pe)");
+        sop("Que tabla quieres crear? (usuarios (u)/ libros (l)/ autores (a)/ ejemplares (e)/prestamos(pr)/ penalizaciones (pe))");
         String opcion=scanner.nextLine();
         switch (opcion) {
             case "u":
@@ -1069,7 +1073,7 @@ public class Io{
     }
     public static void borrarTablas(Connection conn, Scanner scanner) {
         
-        sop("Que tabla quieres crear? (u/ l/ a/ e/ pr/ pe)");
+        sop("Que tabla quieres crear? (usuarios (u)/ libros (l)/ autores (a)/ ejemplares (e)/prestamos(pr)/ penalizaciones (pe))");
         String opcion=scanner.nextLine();
         switch (opcion) {
             case "u":
@@ -1097,7 +1101,7 @@ public class Io{
 
     }
     public static void gestionarTablas(Connection conn, Scanner scanner) {
-        sop("Quieres Crear o Eliminar una Tabla  (c/b)");
+        sop("Quieres Crear o Borrar una Tabla  (crear (c)/borrar (b))");
         String opcion=scanner.nextLine();
         switch (opcion) {
             case "c":
@@ -1110,9 +1114,9 @@ public class Io{
 
     }
     public static void crearTablaUsuarios(Connection conn) {
-        if (!comprobarExistenciaTablaUsuarios(conn)) {
+        if (!comprobarExistenciaTablaUsuarios(conn)) { // Comprueba si la tabla usuarios existe
             try {
-                String sql = "CREATE TABLE usuarios (" +
+                String sql = "CREATE TABLE usuarios (" +  //consulta para crear la trabla
                             "cod_usuario INT PRIMARY KEY, " +
                             "nombre_usuario VARCHAR(40), " +
                             "contrasena VARCHAR(20), " +
@@ -1120,7 +1124,7 @@ public class Io{
                             "direccion VARCHAR(255), " +
                             "correo_elec VARCHAR(50), " +
                             "num_ss VARCHAR(20))";
-                Statement stmt = conn.createStatement();
+                Statement stmt = conn.createStatement();  //creamos una sentencia para ejecutar la consulta SQL
                 stmt.execute(sql);
                 stmt.close();
                 sop("Tabla 'usuarios' creada correctamente.");
@@ -1233,12 +1237,12 @@ public class Io{
     }
 
     public static void borrarTablaUsuarios(Connection conn) {
-        if (comprobarExistenciaTablaUsuarios(conn)) {
+        if (comprobarExistenciaTablaUsuarios(conn)) { //comprueba si existe
             try {
-                Statement stmt = conn.createStatement();
-                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-                stmt.executeUpdate("DROP TABLE IF EXISTS usuarios");
-                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+                Statement stmt = conn.createStatement(); //sentencia SQL para ejecutar los comandos 
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0"); // desactiva temporalmente las restricciones de claves foraneas
+                stmt.executeUpdate("DROP TABLE IF EXISTS usuarios");  // elimina la tabla usuarios si existe
+                stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1"); // reactiva las restricciones
                 stmt.close();
                 sop("Tabla eliminada correctamente");
             } catch (SQLException e) {
@@ -1391,7 +1395,7 @@ public class Io{
     }
     public static void mostrarCampos(Connection conn, Scanner scanner) {
         
-        sop("De que tabla quieres ver los Campos? (u/ l/ a/ e/ pr/ pe)");
+        sop("De que tabla quieres ver los Campos? (usuarios (u)/ libros (l)/ autores (a)/ ejemplares (e)/prestamos(pr)/ penalizaciones (pe))");
         String opcion=scanner.nextLine();
         switch (opcion) {
             case "u":
@@ -1420,13 +1424,13 @@ public class Io{
     }
     public static void mostrarCamposTablaUsuarios(Connection conn) {
         try {
-            String sql = "SELECT * FROM usuarios LIMIT 1";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnCount = rsmd.getColumnCount();
+            String sql = "SELECT * FROM usuarios LIMIT 1";   // consulta que selecciona una fila para acceder a los datos de las columnas
+            PreparedStatement stmt = conn.prepareStatement(sql); // prepara la sentencia sql
+            ResultSet rs = stmt.executeQuery(); // ejecuta la consulta
+            ResultSetMetaData rsmd = rs.getMetaData(); // obtiene informacion sobre las columnas
+            int columnCount = rsmd.getColumnCount(); // total de columnas que tiene la tabla
     
-            for (int i = 1; i <= columnCount; i++) {
+            for (int i = 1; i <= columnCount; i++) { // imprime el nombre de la columna y su tipo de dato 
                 sop(rsmd.getColumnName(i) + " (" + rsmd.getColumnTypeName(i) + ")");
             }
     
@@ -1550,7 +1554,7 @@ public class Io{
                     sop("El ISBN no existe. Introduce otro ISBN:");
                     isbn = scanner.nextLine();
                 }
-                if (!algunaDisponibilidad(conn,isbn)) {
+                while (!algunaDisponibilidad(conn,isbn)) {
                     sop("No hay ejemplares disponibles.");
                     continuar(scanner);
                     mostrarRegistrosTabla(conn, "libros");
