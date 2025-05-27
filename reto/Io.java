@@ -1811,32 +1811,6 @@ public class Io{
         LocalDate localDate2 = fecha2.toLocalDate();
         return (int) ChronoUnit.DAYS.between(localDate1, localDate2);
     }
-    // public static void mostrarTablas(Connection conn, Scanner scanner) {
-        
-    //     sop("De que tabla quieres ver los Campos? (u/ l/ a/ e/ pr/ pe)");
-    //     String opcion=scanner.nextLine();
-    //     switch (opcion) {
-    //         case "u":
-    //             mostrarUsuariosPaginados(conn, scanner);
-    //             break;
-    //         case "l":
-    //             mostrarLibrosPaginados(conn, scanner);
-    //             break;
-    //         case "a":
-    //             mostrarAutoresPaginados(conn, scanner);
-    //             break;
-    //         case "e":
-    //             mostrarPenalizacionesPaginadas(conn, scanner);
-    //             break;
-    //         case "pr":
-    //             mostrarReservasPaginadas(conn, scanner);
-    //             break;
-    //         default:
-    //             sop("opcion incorrecta");
-    //             break;
-    //     }
-
-    // }
     public static void mostrarUsuariosPaginados(Connection conn, Scanner scanner){
         int pagina = 0;
         int tamanioPagina = 10;
